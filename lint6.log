@@ -1,0 +1,10 @@
+﻿
+> nextjs-new@0.1.0 lint
+> eslint
+
+
+C:\Users\HP\orchids-projects\brown-worm\gen-spices2.js
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+Γ£û 1 problem (1 error, 0 warnings)
+

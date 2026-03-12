@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingCart, Heart, Search, Menu, X, Leaf } from "lucide-react";
+import { ShoppingCart, Heart, Search, Menu, X, Leaf, User } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import CartSidebar from "./CartSidebar";
 import SearchOverlay from "./SearchOverlay";
+import { useSession } from "next-auth/react";
+import Logo from "@/components/ui/Logo";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -23,6 +25,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { totalItems, toggleCart } = useCart();
   const { items: wishlistItems } = useWishlist();
+  const { data: session } = useSession();
   const isHome = pathname === "/";
 
   useEffect(() => {
@@ -41,13 +44,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-9 h-9 bg-[#C65A00] rounded-full flex items-center justify-center group-hover:bg-[#D4AF37] transition-colors duration-300">
-                <Leaf className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-serif text-2xl font-bold text-white tracking-wide">
-                Zestora
-              </span>
+            <Link href="/" className="flex items-center group">
+              <Logo className="text-3xl text-white transition-opacity hover:opacity-90" />
             </Link>
 
             {/* Desktop Nav */}
@@ -85,6 +83,10 @@ export default function Navbar() {
                     {wishlistItems.length}
                   </span>
                 )}
+              </Link>
+              
+              <Link href={session ? "/account" : "/login"} className="p-2 text-white/80 hover:text-white transition-colors duration-200">
+                <User className="w-5 h-5" />
               </Link>
 
               <button
@@ -134,6 +136,16 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            
+            <Link
+              href={session ? "/account" : "/login"}
+              onClick={() => setMobileOpen(false)}
+              className={`block py-3 text-sm font-medium tracking-widest uppercase border-b border-white/10 ${
+                pathname === "/account" ? "text-[#D4AF37]" : "text-white/70 hover:text-white"
+              }`}
+            >
+              Account
+            </Link>
             <Link
               href="/shop"
               onClick={() => setMobileOpen(false)}

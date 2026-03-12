@@ -10,7 +10,7 @@ import ProductCard from "@/components/ui/ProductCard";
 import { products, categories, testimonials, stats } from "@/data/products";
 
 // Intersection Observer hook for scroll animations
-function useInView(threshold = 0.15) {
+function useInView(threshold = 0.05) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -47,7 +47,9 @@ function Counter({ value }: { value: string }) {
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
-const featuredProducts = products.filter((p) => p.featured);
+const featuredProducts = products
+  .filter((p) => p.featured)
+  .slice(0, 8);
 
 const trustLogos = [
   { name: "USDA Organic", bg: "bg-green-50" },
@@ -209,7 +211,7 @@ function FeaturedSection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
         {featuredProducts.map((product, i) => (
           <div
             key={product.id}

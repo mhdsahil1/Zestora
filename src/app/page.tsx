@@ -170,10 +170,12 @@ export default function HomePage() {
       </section>
 
       {/* ─── FEATURED SPICES ─── */}
-      <FeaturedSection />
+      <section className="bg-[#FFF7E6]">
+        <FeaturedSection />
+      </section>
 
       {/* ─── CATEGORIES ─── */}
-      <CategoriesSection />
+      <CategoriesSection/>
 
       {/* ─── WHY ZESTORA ─── */}
       <WhyZestoraSection />
@@ -181,7 +183,7 @@ export default function HomePage() {
       {/* ─── BRAND STORY ─── */}
       <BrandStorySection />
 
-      {/* ─── TESTIMONIALS ��── */}
+      {/* ─── TESTIMONIALS ���── */}
       <TestimonialsSection />
 
       {/* ─── HOW TO USE GUIDE ─── */}
@@ -204,15 +206,15 @@ export default function HomePage() {
 function FeaturedSection() {
   const { ref, inView } = useInView();
   return (
-    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-3">
+    <section ref={ref} className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className={`text-center mb-10 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-2">
           Handpicked For You
         </p>
-        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-4">
+        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-3">
           Featured Spices
         </h2>
-        <div className="section-divider mx-auto mb-5" />
+        <div className="section-divider mx-auto mb-4" />
         <p className="text-[#7A5C3A] max-w-xl mx-auto text-sm leading-relaxed">
           Each spice in our collection is sourced directly from farmers, ensuring unmatched freshness and provenance.
         </p>
@@ -230,7 +232,7 @@ function FeaturedSection() {
         ))}
       </div>
 
-      <div className="text-center mt-12">
+      <div className="text-center mt-8">
         <Link
           href="/shop"
           className="inline-flex items-center gap-2 px-8 py-3.5 border-2 border-[#C65A00] text-[#C65A00] font-medium rounded-full hover:bg-[#C65A00] hover:text-white transition-all duration-300"
@@ -247,9 +249,9 @@ function FeaturedSection() {
 function CategoriesSection() {
   const { ref, inView } = useInView();
   return (
-    <section ref={ref} className="py-24 bg-[#2B1B12]">
+    <section ref={ref} className="py-16 bg-[#2B1B12]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <div className={`text-center mb-10 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <p className="text-xs uppercase tracking-[0.25em] text-[#D4AF37] font-medium mb-3">
             Browse By Category
           </p>
@@ -322,8 +324,8 @@ function WhyZestoraSection() {
   ];
 
   return (
-    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="grid lg:grid-cols-2 gap-16 items-center">
+    <section ref={ref} className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="grid lg:grid-cols-2 gap-12 items-center">
         {/* Left: Image collage */}
         <div className={`relative transition-all duration-700 ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}>
           <div className="grid grid-cols-2 gap-4">
@@ -414,46 +416,7 @@ function WhyZestoraSection() {
 function BrandStorySection() {
   const { ref, inView } = useInView();
   return (
-    <section ref={ref} className="relative py-32 overflow-hidden">
-      <div className="absolute inset-0">
-        <Image
-          src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1920&q=80"
-          alt="Spice market"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-[#2B1B12]/80" />
-      </div>
-
-      <div className={`relative z-10 max-w-4xl mx-auto text-center px-4 transition-all duration-1000 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
-        <p className="text-xs uppercase tracking-[0.3em] text-[#D4AF37] font-medium mb-6">
-          Our Story
-        </p>
-        <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white mb-8 leading-tight">
-          Born from a Passion for
-          <br />
-          <span className="gradient-text">Authentic Flavors</span>
-        </h2>
-        <p className="text-white/70 text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
-          Zestora was founded in 2009 with one belief: that great food begins with extraordinary spices. We traveled to the source—Kerala&apos;s cardamom hills, Kashmir&apos;s saffron fields, Tamil Nadu&apos;s turmeric farms—to bring you spices as nature intended them.
-        </p>
-        <Link
-          href="/about"
-          className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#D4AF37] text-[#D4AF37] font-medium rounded-full hover:bg-[#D4AF37] hover:text-[#2B1B12] transition-all duration-300"
-        >
-          Read Our Full Story
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
-    </section>
-  );
-}
-
-// ─── TESTIMONIALS SECTION ───
-function TestimonialsSection() {
-  const { ref, inView } = useInView();
-  return (
-    <section ref={ref} className="py-24 bg-[#F5E6C8]">
+    <section ref={ref} className="py-16 bg-[#F5E6C8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-3">
@@ -507,6 +470,48 @@ function TestimonialsSection() {
   );
 }
 
+// ─── TESTIMONIALS SECTION ───
+function TestimonialsSection() {
+  const { ref, inView } = useInView();
+  return (
+    <section ref={ref} className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className={`text-center mb-10 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-2">
+          Customer Reviews
+        </p>
+        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-3">
+          Loved by Spice Enthusiasts
+        </h2>
+        <div className="section-divider mx-auto mb-4" />
+        <p className="text-[#7A5C3A] max-w-xl mx-auto text-sm leading-relaxed">
+          Hear from our customers about their experience with Zestora spices.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        {testimonials.map((t, i) => (
+          <div
+            key={t.id}
+            className={`bg-white rounded-2xl p-8 border border-[#E8D5B0] transition-all duration-700 hover:shadow-lg ${
+              inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+            style={{ transitionDelay: `${i * 100}ms` }}
+          >
+            <div className="flex items-center gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-[#C65A00] text-[#C65A00]" />
+              ))}
+            </div>
+            <p className="text-[#2B1B12] text-sm leading-relaxed mb-4">{t.text}</p>
+            <p className="font-semibold text-[#2B1B12]">{t.author}</p>
+            <p className="text-xs text-[#7A5C3A]">{t.role}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ─── HOW TO USE GUIDE SECTION ───
 function HowToUseSection() {
   const { ref, inView } = useInView();
@@ -538,15 +543,15 @@ function HowToUseSection() {
   ];
 
   return (
-    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-3">
+    <section ref={ref} className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className={`text-center mb-10 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-2">
           Expert Guidance
         </p>
-        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-4">
+        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-3">
           How to Use Spices Like a Pro
         </h2>
-        <div className="section-divider mx-auto mb-5" />
+        <div className="section-divider mx-auto mb-4" />
         <p className="text-[#7A5C3A] max-w-xl mx-auto text-sm leading-relaxed">
           Master the art of spice usage with our expert tips and techniques to elevate your cooking.
         </p>
@@ -606,13 +611,13 @@ function CollectionsSection() {
   ];
 
   return (
-    <section ref={ref} className="py-24 bg-[#2B1B12]">
+    <section ref={ref} className="py-16 bg-[#2B1B12]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <p className="text-xs uppercase tracking-[0.25em] text-[#D4AF37] font-medium mb-3">
+        <div className={`text-center mb-10 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <p className="text-xs uppercase tracking-[0.25em] text-[#D4AF37] font-medium mb-2">
             Curated Collections
           </p>
-          <h2 className="font-serif text-4xl lg:text-5xl text-white mb-4">
+          <h2 className="font-serif text-4xl lg:text-5xl text-white mb-3">
             Spice Collections by Purpose
           </h2>
           <div className="section-divider mx-auto" />
@@ -676,21 +681,21 @@ function QualitySection() {
   ];
 
   return (
-    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-3">
+    <section ref={ref} className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className={`text-center mb-10 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-2">
           Quality Commitment
         </p>
-        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-4">
+        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-3">
           Our Quality Promise
         </h2>
-        <div className="section-divider mx-auto mb-5" />
+        <div className="section-divider mx-auto mb-4" />
         <p className="text-[#7A5C3A] max-w-xl mx-auto text-sm leading-relaxed">
           We maintain the highest standards in sourcing, testing, and delivering premium spices to your kitchen.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-6">
         {qualityPoints.map((point, i) => (
           <div
             key={i}
@@ -708,7 +713,7 @@ function QualitySection() {
         ))}
       </div>
 
-      <div className="mt-14 text-center">
+      <div className="mt-8 text-center">
         <Link
           href="/about"
           className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#C65A00] text-[#C65A00] font-medium rounded-full hover:bg-[#C65A00] hover:text-white transition-all duration-300"

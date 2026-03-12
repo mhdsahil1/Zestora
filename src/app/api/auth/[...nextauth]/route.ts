@@ -18,7 +18,12 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        await dbConnect();
+        try {
+          await dbConnect();
+        } catch (error) {
+          console.error("[auth] Database connection failed:", error);
+          throw new Error("Authentication service unavailable");
+        }
 
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials");

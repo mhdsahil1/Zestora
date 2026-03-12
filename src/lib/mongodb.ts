@@ -2,11 +2,6 @@ import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 
-// Only throw error when actually trying to connect, not at import time
-if (!MONGODB_URI && typeof window === 'undefined') {
-  console.warn('Warning: MONGODB_URI not defined. Database operations will fail.');
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially

@@ -498,12 +498,12 @@ function TestimonialsSection() {
             style={{ transitionDelay: `${i * 100}ms` }}
           >
             <div className="flex items-center gap-1 mb-4">
-              {[...Array(5)].map((_, i) => (
+              {[...Array(t.rating)].map((_, i) => (
                 <Star key={i} className="w-4 h-4 fill-[#C65A00] text-[#C65A00]" />
               ))}
             </div>
-            <p className="text-[#2B1B12] text-sm leading-relaxed mb-4">{t.text}</p>
-            <p className="font-semibold text-[#2B1B12]">{t.author}</p>
+            <p className="text-[#2B1B12] text-sm leading-relaxed mb-4">{t.review}</p>
+            <p className="font-semibold text-[#2B1B12]">{t.name}</p>
             <p className="text-xs text-[#7A5C3A]">{t.role}</p>
           </div>
         ))}

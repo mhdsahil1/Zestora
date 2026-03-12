@@ -181,8 +181,17 @@ export default function HomePage() {
       {/* ─── BRAND STORY ─── */}
       <BrandStorySection />
 
-      {/* ─── TESTIMONIALS ─── */}
+      {/* ─── TESTIMONIALS ��── */}
       <TestimonialsSection />
+
+      {/* ─── HOW TO USE GUIDE ─── */}
+      <HowToUseSection />
+
+      {/* ─── SPICE COLLECTIONS ─── */}
+      <CollectionsSection />
+
+      {/* ─── QUALITY ASSURANCE ─── */}
+      <QualitySection />
 
       {/* ─── NEWSLETTER (handled in footer) ─── */}
 
@@ -493,6 +502,220 @@ function TestimonialsSection() {
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── HOW TO USE GUIDE SECTION ───
+function HowToUseSection() {
+  const { ref, inView } = useInView();
+  const guides = [
+    {
+      number: "01",
+      title: "Storage Tips",
+      description: "Store spices in airtight containers away from heat, light, and moisture. Keep in a cool, dark place to preserve freshness and potency for up to 2 years.",
+      color: "bg-blue-50 text-blue-700",
+    },
+    {
+      number: "02",
+      title: "Toasting Spices",
+      description: "Toast whole spices in a dry pan over medium heat for 2-3 minutes to unlock deeper flavors. Grind immediately after toasting for maximum aroma.",
+      color: "bg-amber-50 text-amber-700",
+    },
+    {
+      number: "03",
+      title: "Measuring Guide",
+      description: "Use 1 tsp per 2 servings as a starting point. Start with less and add more to taste. Ground spices are more potent than whole varieties.",
+      color: "bg-green-50 text-green-700",
+    },
+    {
+      number: "04",
+      title: "Flavor Pairings",
+      description: "Combine complementary spices: turmeric + cumin for curries, cardamom + cinnamon for baking, and black pepper + paprika for savory dishes.",
+      color: "bg-rose-50 text-rose-700",
+    },
+  ];
+
+  return (
+    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-3">
+          Expert Guidance
+        </p>
+        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-4">
+          How to Use Spices Like a Pro
+        </h2>
+        <div className="section-divider mx-auto mb-5" />
+        <p className="text-[#7A5C3A] max-w-xl mx-auto text-sm leading-relaxed">
+          Master the art of spice usage with our expert tips and techniques to elevate your cooking.
+        </p>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {guides.map((guide, i) => (
+          <div
+            key={i}
+            className={`${guide.color} rounded-2xl p-8 transition-all duration-700 hover:shadow-lg ${
+              inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
+            style={{ transitionDelay: `${i * 100}ms` }}
+          >
+            <div className="text-4xl font-serif font-bold mb-3 opacity-20">{guide.number}</div>
+            <h3 className="font-serif text-xl font-semibold mb-3 text-[#2B1B12]">{guide.title}</h3>
+            <p className="text-sm text-[#2B1B12] opacity-75 leading-relaxed">{guide.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── SPICE COLLECTIONS SECTION ───
+function CollectionsSection() {
+  const { ref, inView } = useInView();
+  const collections = [
+    {
+      title: "Cooking Essentials",
+      description: "The foundation spices every kitchen needs",
+      spices: ["Turmeric", "Cumin", "Coriander", "Black Pepper"],
+      color: "from-orange-500 to-red-500",
+      icon: "🍳",
+    },
+    {
+      title: "Baking & Sweets",
+      description: "Perfect for desserts and sweet dishes",
+      spices: ["Cinnamon", "Cardamom", "Nutmeg", "Cloves"],
+      color: "from-amber-500 to-yellow-500",
+      icon: "🍰",
+    },
+    {
+      title: "Health & Wellness",
+      description: "Spices celebrated for health benefits",
+      spices: ["Turmeric", "Ginger", "Cinnamon", "Fenugreek"],
+      color: "from-green-500 to-emerald-500",
+      icon: "⚕️",
+    },
+    {
+      title: "Exotic & Rare",
+      description: "Premium spices for gourmet cooking",
+      spices: ["Saffron", "Asafoetida", "Mace", "Star Anise"],
+      color: "from-purple-500 to-pink-500",
+      icon: "✨",
+    },
+  ];
+
+  return (
+    <section ref={ref} className="py-24 bg-[#2B1B12]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <p className="text-xs uppercase tracking-[0.25em] text-[#D4AF37] font-medium mb-3">
+            Curated Collections
+          </p>
+          <h2 className="font-serif text-4xl lg:text-5xl text-white mb-4">
+            Spice Collections by Purpose
+          </h2>
+          <div className="section-divider mx-auto" />
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {collections.map((collection, i) => (
+            <div
+              key={i}
+              className={`group relative rounded-2xl overflow-hidden transition-all duration-500 ${
+                inView ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              }`}
+              style={{ transitionDelay: `${i * 80}ms` }}
+            >
+              <div className={`bg-gradient-to-br ${collection.color} h-full rounded-2xl p-6 text-white relative z-10`}>
+                <div className="text-3xl mb-3">{collection.icon}</div>
+                <h3 className="font-serif text-xl font-bold mb-2">{collection.title}</h3>
+                <p className="text-sm text-white/80 mb-4">{collection.description}</p>
+                <div className="space-y-1">
+                  {collection.spices.map((spice, j) => (
+                    <div key={j} className="text-xs text-white/70 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                      {spice}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="absolute inset-0 rounded-2xl border border-white/10" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── QUALITY ASSURANCE SECTION ───
+function QualitySection() {
+  const { ref, inView } = useInView();
+  const qualityPoints = [
+    {
+      title: "Direct Sourcing",
+      description: "We work directly with farmers and cooperative farms to ensure fair practices and maximum freshness.",
+      icon: "🌾",
+    },
+    {
+      title: "Rigorous Testing",
+      description: "Every batch undergoes laboratory testing for purity, potency, and absence of contaminants.",
+      icon: "🔬",
+    },
+    {
+      title: "Eco-Friendly Packaging",
+      description: "Our sustainable packaging preserves spice quality while minimizing environmental impact.",
+      icon: "♻️",
+    },
+    {
+      title: "Traceability",
+      description: "Know exactly where your spices come from with full batch traceability and origin documentation.",
+      icon: "📍",
+    },
+  ];
+
+  return (
+    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-3">
+          Quality Commitment
+        </p>
+        <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-4">
+          Our Quality Promise
+        </h2>
+        <div className="section-divider mx-auto mb-5" />
+        <p className="text-[#7A5C3A] max-w-xl mx-auto text-sm leading-relaxed">
+          We maintain the highest standards in sourcing, testing, and delivering premium spices to your kitchen.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8">
+        {qualityPoints.map((point, i) => (
+          <div
+            key={i}
+            className={`flex gap-6 transition-all duration-700 ${
+              inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+            }`}
+            style={{ transitionDelay: `${i * 100}ms` }}
+          >
+            <div className="text-5xl flex-shrink-0">{point.icon}</div>
+            <div>
+              <h3 className="font-serif text-xl font-semibold text-[#2B1B12] mb-2">{point.title}</h3>
+              <p className="text-[#7A5C3A] text-sm leading-relaxed">{point.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-14 text-center">
+        <Link
+          href="/about"
+          className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#C65A00] text-[#C65A00] font-medium rounded-full hover:bg-[#C65A00] hover:text-white transition-all duration-300"
+        >
+          Learn About Our Process
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
     </section>
   );

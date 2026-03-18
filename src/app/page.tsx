@@ -7,6 +7,7 @@ import { ArrowRight, Star, Leaf, Award, Truck, Shield, ChevronRight, Play } from
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
+import BentoGridFeatures from "@/components/ui/BentoGridFeatures";
 import { products, categories, testimonials, stats } from "@/data/products";
 
 // Intersection Observer hook for scroll animations
@@ -177,8 +178,8 @@ export default function HomePage() {
       {/* ─── CATEGORIES ─── */}
       <CategoriesSection />
 
-      {/* ─── WHY ZESTORA ─── */}
-      <WhyZestoraSection />
+      {/* ─── WHY ZESTORA (BENTO) ─── */}
+      <BentoGridFeatures />
 
       {/* ─── BRAND STORY ─── */}
       <BrandStorySection />

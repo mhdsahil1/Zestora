@@ -9,6 +9,8 @@ import ProductCard from "@/components/ui/ProductCard";
 import { products } from "@/data/products";
 
 const allCategories = ["All", ...Array.from(new Set(products.map((p) => p.category)))];
+const allCuisines = ["All", ...Array.from(new Set(products.flatMap((p) => p.cuisine || [])))];
+const allDietaries = ["All", ...Array.from(new Set(products.flatMap((p) => p.dietary || [])))];
 const sortOptions = [
   { value: "featured", label: "Featured" },
   { value: "price-asc", label: "Price: Low to High" },
@@ -22,6 +24,8 @@ function ShopContent() {
   const initCategory = searchParams.get("category") || "All";
 
   const [selectedCategory, setSelectedCategory] = useState(initCategory);
+  const [selectedCuisine, setSelectedCuisine] = useState("All");
+  const [selectedDietary, setSelectedDietary] = useState("All");
   const [sortBy, setSortBy] = useState("featured");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50]);
   const [inStockOnly, setInStockOnly] = useState(false);
@@ -32,6 +36,12 @@ function ShopContent() {
     let list = [...products];
     if (selectedCategory !== "All") {
       list = list.filter((p) => p.category === selectedCategory);
+    }
+    if (selectedCuisine !== "All") {
+      list = list.filter((p) => p.cuisine?.includes(selectedCuisine));
+    }
+    if (selectedDietary !== "All") {
+      list = list.filter((p) => p.dietary?.includes(selectedDietary));
     }
     list = list.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
     if (inStockOnly) list = list.filter((p) => p.inStock);
@@ -44,7 +54,7 @@ function ShopContent() {
       case "featured": list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)); break;
     }
     return list;
-  }, [selectedCategory, sortBy, priceRange, inStockOnly]);
+  }, [selectedCategory, selectedCuisine, selectedDietary, sortBy, priceRange, inStockOnly]);
 
   return (
     <main className="min-h-screen bg-[#FFF7E6]">
@@ -101,9 +111,9 @@ function ShopContent() {
               />
               In Stock Only
             </label>
-            {(selectedCategory !== "All" || priceRange[0] > 0 || priceRange[1] < 50 || inStockOnly) && (
+            {(selectedCategory !== "All" || selectedCuisine !== "All" || selectedDietary !== "All" || priceRange[0] > 0 || priceRange[1] < 50 || inStockOnly) && (
               <button
-                onClick={() => { setSelectedCategory("All"); setPriceRange([0, 50]); setInStockOnly(false); }}
+                onClick={() => { setSelectedCategory("All"); setSelectedCuisine("All"); setSelectedDietary("All"); setPriceRange([0, 50]); setInStockOnly(false); }}
                 className="flex items-center gap-1.5 text-xs text-[#C65A00] hover:underline"
               >
                 <X className="w-3 h-3" /> Clear Filters
@@ -175,6 +185,42 @@ function ShopContent() {
                       onClick={() => setSelectedCategory(cat)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                         selectedCategory === cat
+                          ? "bg-[#C65A00] text-white"
+                          : "bg-[#F5E6C8] text-[#7A5C3A] hover:bg-[#E8D5B0]"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-serif text-sm font-semibold text-[#2B1B12] mb-4">Cuisine</h4>
+                <div className="flex flex-wrap gap-2">
+                  {allCuisines.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCuisine(cat)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        selectedCuisine === cat
+                          ? "bg-[#C65A00] text-white"
+                          : "bg-[#F5E6C8] text-[#7A5C3A] hover:bg-[#E8D5B0]"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="sm:col-span-2">
+                <h4 className="font-serif text-sm font-semibold text-[#2B1B12] mb-4">Dietary Needs</h4>
+                <div className="flex flex-wrap gap-2">
+                  {allDietaries.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedDietary(cat)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        selectedDietary === cat
                           ? "bg-[#C65A00] text-white"
                           : "bg-[#F5E6C8] text-[#7A5C3A] hover:bg-[#E8D5B0]"
                       }`}

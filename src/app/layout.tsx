@@ -5,6 +5,7 @@ import { VisualEditsMessenger } from "orchids-visual-edits";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import FloatingIslandNav from "@/components/layout/FloatingIslandNav";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -41,6 +42,7 @@ export default function RootLayout({
           <CartProvider>
             <WishlistProvider>
               {children}
+              <FloatingIslandNav />
               <VisualEditsMessenger />
             </WishlistProvider>
           </CartProvider>

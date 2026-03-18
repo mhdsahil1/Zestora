@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Leaf, Instagram, Twitter, Facebook, Youtube, Mail, MapPin, Phone } from "lucide-react";

@@ -37,6 +37,7 @@ export default function ProductDetailPage() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [reviewFilter, setReviewFilter] = useState("all");
+  const [imageErrors, setImageErrors] = useState<{[key: number]: boolean}>({});
 
   if (!product) return notFound();
 
@@ -68,14 +69,22 @@ export default function ProductDetailPage() {
         <div className="grid lg:grid-cols-2 gap-16">
           {/* Images */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-[#F5E6C8]">
-              <Image
-                src={product.images[selectedImage] || product.image}
-                alt={product.name}
-                fill
-                className="object-cover"
-                priority
-              />
+            <div className="relative aspect-square rounded-3xl overflow-hidden bg-[#F5E6C8] flex items-center justify-center">
+              {!imageErrors[selectedImage] ? (
+                <Image
+                  src={product.images[selectedImage] || product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                  priority
+                  onError={() => setImageErrors({...imageErrors, [selectedImage]: true})}
+                  crossOrigin="anonymous"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#E8D5B0] to-[#F5E6C8]">
+                  <span className="text-[#7A5C3A] text-sm font-medium text-center px-4">{product.name}</span>
+                </div>
+              )}
               {discount && (
                 <span className="absolute top-5 left-5 bg-[#C65A00] text-white text-xs font-bold px-3 py-1.5 rounded-full">
                   -{discount}% OFF
@@ -88,11 +97,22 @@ export default function ProductDetailPage() {
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all duration-200 ${
+                    className={`relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all duration-200 flex items-center justify-center bg-[#F5E6C8] ${
                       selectedImage === i ? "border-[#C65A00] shadow-md" : "border-transparent"
                     }`}
                   >
-                    <Image src={img} alt={`${product.name} ${i + 1}`} fill className="object-cover" />
+                    {!imageErrors[i] ? (
+                      <Image 
+                        src={img} 
+                        alt={`${product.name} ${i + 1}`} 
+                        fill 
+                        className="object-cover"
+                        onError={() => setImageErrors({...imageErrors, [i]: true})}
+                        crossOrigin="anonymous"
+                      />
+                    ) : (
+                      <span className="text-[8px] text-[#7A5C3A] text-center px-1">No img</span>
+                    )}
                   </button>
                 ))}
               </div>

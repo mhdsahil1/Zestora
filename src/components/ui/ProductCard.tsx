@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingCart, Star, Leaf } from "lucide-react";
@@ -17,6 +17,7 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
   const { addItem } = useCart();
   const { toggle, isWishlisted } = useWishlist();
   const wishlisted = isWishlisted(product.id);
+  const [imageError, setImageError] = useState(false);
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null;
@@ -26,13 +27,22 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-[#F5E6C8]">
         <Link href={`/shop/${product.slug}`} className="relative block w-full h-full">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
+          {!imageError ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              onError={() => setImageError(true)}
+              priority={false}
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#E8D5B0] to-[#F5E6C8]">
+              <span className="text-[#7A5C3A] text-xs font-medium text-center px-4">{product.name}</span>
+            </div>
+          )}
         </Link>
 
         {/* Badges */}

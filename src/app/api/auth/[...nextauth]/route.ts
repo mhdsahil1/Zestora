@@ -2,8 +2,6 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
-import dbConnect from "@/lib/mongodb";
-import User from "@/models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -18,31 +16,40 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        await dbConnect();
+        try {
+          // Dynamically import to avoid module-level errors
+          const dbConnect = (await import("@/lib/mongodb")).default;
+          const User = (await import("@/models/User")).default;
+          
+          await dbConnect();
 
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials");
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error("Invalid credentials");
+          }
+
+          const user = await User.findOne({ email: credentials.email }).select("+password");
+
+          if (!user) {
+            throw new Error("Invalid credentials");
+          }
+
+          const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
+
+          if (!isPasswordCorrect) {
+            throw new Error("Invalid credentials");
+          }
+
+          // Must return a plain JSON object, not a full Mongoose Document
+          return {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
+          throw new Error("Authentication failed");
         }
-
-        const user = await User.findOne({ email: credentials.email }).select("+password");
-
-        if (!user) {
-          throw new Error("Invalid credentials");
-        }
-
-        const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
-
-        if (!isPasswordCorrect) {
-          throw new Error("Invalid credentials");
-        }
-
-        // Must return a plain JSON object, not a full Mongoose Document
-        return {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        };
       },
     }),
   ],

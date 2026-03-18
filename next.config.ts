@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    // Remove invalid transitionIndicator option
+  },
   turbopack: {
     rules: {
       "*.{jsx,tsx}": {

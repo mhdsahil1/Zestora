@@ -1,26 +1,52 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
-import { NextRequest } from "next/server";
+import { z } from "zod";
+import { RateLimiterMemory } from "rate-limiter-flexible";
+
+const signupSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Phone number must be at least 10 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const rateLimiter = new RateLimiterMemory({
+  points: 5, // 5 requests
+  duration: 60, // per 60 seconds by IP
+});
 
 export async function POST(req: NextRequest) {
   try {
-    await dbConnect();
-    const { name, email, phone, password } = await req.json();
-
-    if (!name || !email || !phone || !password) {
+    const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+    try {
+      await rateLimiter.consume(ip);
+    } catch (rateLimiterRes) {
       return NextResponse.json(
-        { message: "Please enter all fields." },
+        { message: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
+    await dbConnect();
+    const body = await req.json();
+
+    const validatedData = signupSchema.safeParse(body);
+    if (!validatedData.success) {
+      return NextResponse.json(
+        { message: "Invalid input data.", errors: validatedData.error.issues },
         { status: 400 }
       );
     }
+
+    const { name, email, phone, password } = validatedData.data;
 
     const userExists = await User.findOne({ email });
 
     if (userExists) {
       return NextResponse.json(
-        { message: "User already exists with this email." },
+        { message: "Registration failed or user already exists." },
         { status: 400 }
       );
     }
@@ -28,7 +54,7 @@ export async function POST(req: NextRequest) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await User.create({
+    await User.create({
       name,
       email,
       phone,
@@ -41,7 +67,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (error: any) {
     return NextResponse.json(
-      { message: "An error occurred during registration.", error: error.message },
+      { message: "An error occurred during registration." },
       { status: 500 }
     );
   }

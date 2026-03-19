@@ -4,6 +4,12 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import { z } from "zod";
+
+const credentialsSchema = z.object({
+  email: z.string().email("Invalid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -20,17 +26,19 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         await dbConnect();
 
-        if (!credentials?.email || !credentials?.password) {
+        const validatedData = credentialsSchema.safeParse(credentials);
+
+        if (!validatedData.success) {
           throw new Error("Invalid credentials");
         }
 
-        const user = await User.findOne({ email: credentials.email }).select("+password");
+        const user = await User.findOne({ email: validatedData.data.email }).select("+password");
 
         if (!user) {
           throw new Error("Invalid credentials");
         }
 
-        const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(validatedData.data.password, user.password);
 
         if (!isPasswordCorrect) {
           throw new Error("Invalid credentials");
@@ -52,6 +60,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  useSecureCookies: process.env.NODE_ENV === "production",
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

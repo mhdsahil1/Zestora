@@ -21,6 +21,26 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null;
 
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      addItem(product);
+    } catch (error) {
+      console.error("[ProductCard] Error adding item to cart:", error);
+    }
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      toggle(product);
+    } catch (error) {
+      console.error("[ProductCard] Error toggling wishlist:", error);
+    }
+  };
+
   return (
     <div className={`group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-400 ${className}`}>
       {/* Image */}
@@ -56,7 +76,7 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
 
         {/* Wishlist button */}
         <button
-          onClick={() => toggle(product)}
+          onClick={handleWishlistToggle}
           className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
             wishlisted
               ? "bg-[#C65A00] text-white"
@@ -69,7 +89,7 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
         {/* Quick add overlay */}
         <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
-            onClick={() => addItem(product)}
+            onClick={handleAddToCart}
             className="w-full py-3 bg-[#2B1B12] text-white text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#C65A00] transition-colors duration-300"
           >
             <ShoppingCart className="w-4 h-4" />

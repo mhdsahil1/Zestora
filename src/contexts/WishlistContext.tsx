@@ -1,7 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Product } from "@/data/products";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { Product } from "@/types/product";
+
+const WISHLIST_STORAGE_KEY = "zestora_wishlist";
 
 interface WishlistContextType {
   items: Product[];
@@ -15,6 +17,24 @@ const WishlistContext = createContext<WishlistContextType | undefined>(undefined
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Product[]>([]);
+
+  // Hydrate from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as Product[];
+        if (Array.isArray(parsed)) setItems(parsed);
+      }
+    } catch {}
+  }, []);
+
+  // Save to localStorage on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items));
+    } catch {}
+  }, [items]);
 
   const addItem = (product: Product) => {
     setItems((prev) => {
@@ -49,3 +69,4 @@ export function useWishlist() {
   if (!ctx) throw new Error("useWishlist must be used within WishlistProvider");
   return ctx;
 }
+

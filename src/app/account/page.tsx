@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { 
@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { toast } from "sonner";
 
 // Dummy Orders Data
 const DUMMY_ORDERS = [
@@ -46,25 +47,87 @@ const DUMMY_ORDERS = [
   }
 ];
 
-// Dummy Addresses
-const DUMMY_ADDRESSES = [
-  {
-    id: 1,
-    fullName: "John Doe",
-    phone: "+1 234 567 8901",
-    addressLine: "123 Spice Lane, Suite 400",
-    city: "New York",
-    state: "NY",
-    pincode: "10001",
-    isDefault: true
-  }
-];
-
 export default function AccountPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile");
   const [selectedOrder, setSelectedOrder] = useState<any>(null); // For order details view
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [profile, setProfile] = useState<any>(null);
+
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState<{ name: string; phone: string }>({
+    name: "",
+    phone: "",
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+type AddressDraft = {
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+};
+
+  const addresses: AddressDraft[] = profile?.addresses ?? [];
+
+  const [addingAddress, setAddingAddress] = useState(false);
+const [newAddressDraft, setNewAddressDraft] = useState<AddressDraft>({
+    fullName: "",
+    phone: "",
+    street: "",
+    city: "",
+    state: "",
+    pincode: "",
+    country: "India"
+  });
+
+  const [editingAddressIndex, setEditingAddressIndex] = useState<number | null>(null);
+  const [addressDraft, setAddressDraft] = useState<AddressDraft>({
+    fullName: "",
+    phone: "",
+    street: "",
+    city: "",
+    state: "",
+    pincode: "",
+    country: "India"
+  });
+
+  useEffect(() => {
+    let mounted = true;
+    setProfileLoading(true);
+
+    fetch("/api/user/profile")
+      .then(async (r) => {
+        const data = await r.json();
+        if (!mounted) return;
+        if (r.ok && data?.user) {
+          setProfile(data.user);
+          setProfileForm({
+            name: data.user?.name ?? "",
+            phone: data.user?.phone ?? "",
+          });
+        } else {
+          setProfile(null);
+        }
+      })
+      .catch(() => {
+        if (!mounted) return;
+        toast.error("Failed to load profile.");
+        setProfile(null);
+      })
+      .finally(() => {
+        if (!mounted) return;
+        setProfileLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Route Protection
   if (status === "loading") {
@@ -81,6 +144,62 @@ export default function AccountPage() {
   }
 
   const user = session?.user;
+
+  const handleSaveProfile = async () => {
+    if (!profile) {
+      toast.error("Profile not loaded yet.");
+      return;
+    }
+    setIsSavingProfile(true);
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: profileForm.name,
+          phone: profileForm.phone,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message || "Failed to update profile.");
+        return;
+      }
+
+      setProfile(data.user);
+      setIsEditingProfile(false);
+      toast.success("Profile updated.");
+    } catch (e: any) {
+      toast.error("Failed to update profile.");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleSaveAddresses = async (nextAddresses: AddressDraft[]) => {
+    setProfileLoading(true);
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ addresses: nextAddresses }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message || "Failed to update addresses.");
+        return;
+      }
+
+      setProfile(data.user);
+      toast.success("Addresses updated.");
+    } catch (e: any) {
+      toast.error("Failed to update addresses.");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const tabs = [
     { id: "profile", label: "Profile Information", icon: User },
@@ -148,14 +267,34 @@ export default function AccountPage() {
                 <div className="animate-fade-in-up">
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="font-serif text-2xl text-[#2B1B12]">Profile Information</h2>
-                    <button className="flex items-center gap-2 text-sm text-[#C65A00] hover:underline">
-                      <Edit2 className="w-4 h-4" /> Edit Profile
+                    <button
+                      onClick={() => {
+                        setIsEditingProfile((v) => !v);
+                        setProfileForm({
+                          name: profile?.name ?? user?.name ?? "",
+                          phone: profile?.phone ?? "",
+                        });
+                      }}
+                      className="flex items-center gap-2 text-sm text-[#C65A00] hover:underline"
+                    >
+                      <Edit2 className="w-4 h-4" /> {isEditingProfile ? "Cancel" : "Edit Profile"}
                     </button>
                   </div>
+                  {profileLoading ? (
+                    <div className="text-[#7A5C3A]">Loading...</div>
+                  ) : (
                   <div className="space-y-6 max-w-lg">
                     <div>
                       <label className="block text-xs uppercase tracking-wider text-[#7A5C3A] mb-1">Full Name</label>
-                      <p className="text-lg text-[#2B1B12] font-medium">{user?.name}</p>
+                      {isEditingProfile ? (
+                        <input
+                          value={profileForm.name}
+                          onChange={(e) => setProfileForm((p) => ({ ...p, name: e.target.value }))}
+                          className="w-full px-4 py-3 bg-[#FFF7E6] border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                        />
+                      ) : (
+                        <p className="text-lg text-[#2B1B12] font-medium">{profile?.name ?? user?.name}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-xs uppercase tracking-wider text-[#7A5C3A] mb-1">Email Address</label>
@@ -163,7 +302,15 @@ export default function AccountPage() {
                     </div>
                     <div>
                       <label className="block text-xs uppercase tracking-wider text-[#7A5C3A] mb-1">Phone Number</label>
-                      <p className="text-lg text-[#2B1B12] font-medium">+1 234 567 8901</p> {/* Placeholder */}
+                      {isEditingProfile ? (
+                        <input
+                          value={profileForm.phone}
+                          onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))}
+                          className="w-full px-4 py-3 bg-[#FFF7E6] border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                        />
+                      ) : (
+                        <p className="text-lg text-[#2B1B12] font-medium">{profile?.phone ?? "—"}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-xs uppercase tracking-wider text-[#7A5C3A] mb-1">Account Role</label>
@@ -173,7 +320,19 @@ export default function AccountPage() {
                         {user?.role || "User"}
                       </span>
                     </div>
+                    {isEditingProfile && (
+                      <div className="pt-2">
+                        <button
+                          onClick={handleSaveProfile}
+                          disabled={isSavingProfile}
+                          className="w-full bg-[#C65A00] text-white px-8 py-3 rounded-xl font-medium transition-colors hover:bg-[#2B1B12] disabled:opacity-70"
+                        >
+                          {isSavingProfile ? "Saving..." : "Save Changes"}
+                        </button>
+                      </div>
+                    )}
                   </div>
+                  )}
                 </div>
               )}
 
@@ -182,31 +341,222 @@ export default function AccountPage() {
                 <div className="animate-fade-in-up">
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="font-serif text-2xl text-[#2B1B12]">Saved Addresses</h2>
-                    <button className="flex items-center gap-2 text-sm bg-[#FFF7E6] text-[#C65A00] px-4 py-2 rounded-full border border-[#E8D5B0] hover:border-[#C65A00] transition-colors">
-                      <Plus className="w-4 h-4" /> Add New Address
+                    <button
+                       onClick={() => {
+                         setAddingAddress((v) => !v);
+                         setNewAddressDraft({
+                           fullName: "",
+                           phone: "",
+                           street: "",
+                           city: "",
+                           state: "",
+                           pincode: "",
+                           country: "India"
+                         });
+                       }}
+                      className="flex items-center gap-2 text-sm bg-[#FFF7E6] text-[#C65A00] px-4 py-2 rounded-full border border-[#E8D5B0] hover:border-[#C65A00] transition-colors"
+                    >
+                      <Plus className="w-4 h-4" /> {addingAddress ? "Close" : "Add New Address"}
                     </button>
                   </div>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {DUMMY_ADDRESSES.map((addr) => (
-                      <div key={addr.id} className="border-2 border-[#C65A00] rounded-xl p-5 relative bg-[#FFF7E6]/30">
-                        {addr.isDefault && (
-                          <span className="absolute top-4 right-4 text-[10px] uppercase tracking-wider font-bold bg-[#C65A00] text-white px-2 py-1 rounded-md">
-                            Default
-                          </span>
-                        )}
-                        <p className="font-medium text-[#2B1B12] mb-1">{addr.fullName}</p>
-                        <p className="text-sm text-[#7A5C3A] mb-3">{addr.phone}</p>
-                        <p className="text-sm text-[#7A5C3A] leading-relaxed">
-                          {addr.addressLine}<br />
-                          {addr.city}, {addr.state} {addr.pincode}
-                        </p>
-                        <div className="mt-4 flex gap-3">
-                          <button className="text-xs text-[#C65A00] font-medium hover:underline">Edit</button>
-                          <button className="text-xs text-red-600 font-medium hover:underline">Remove</button>
+                  {profileLoading ? (
+                    <div className="text-[#7A5C3A]">Loading...</div>
+                  ) : (
+                    <>
+                      {addresses.length === 0 ? (
+                        <div className="text-center py-10 text-[#7A5C3A] bg-white/50 border border-[#E8D5B0] rounded-2xl">
+                          No saved addresses yet.
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ) : (
+                        <div className="grid sm:grid-cols-2 gap-4">
+                           {addresses.map((addr, idx) => (
+                             <div key={`${addr.street}-${idx}`} className="border-2 border-[#C65A00] rounded-xl p-5 relative bg-[#FFF7E6]/30">
+                              {editingAddressIndex === idx ? (
+                                <>
+                                  <div className="space-y-3">
+                                    <input
+                                      value={addressDraft.fullName}
+                                      onChange={(e) =>
+                                        setAddressDraft((d) => ({ ...d, fullName: e.target.value }))
+                                      }
+                                      className="w-full px-4 py-3 bg-white border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                                      placeholder="Full Name"
+                                    />
+                                    <input
+                                      value={addressDraft.phone}
+                                      onChange={(e) =>
+                                        setAddressDraft((d) => ({ ...d, phone: e.target.value }))
+                                      }
+                                      className="w-full px-4 py-3 bg-white border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                                      placeholder="Phone"
+                                    />
+                                     <input
+                                       value={addressDraft.street}
+                                       onChange={(e) =>
+                                         setAddressDraft((d) => ({ ...d, street: e.target.value }))
+                                       }
+                                       className="w-full px-4 py-3 bg-white border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                                       placeholder="Street"
+                                     />
+                                    <div className="grid sm:grid-cols-2 gap-3">
+                                      <input
+                                        value={addressDraft.city}
+                                        onChange={(e) =>
+                                          setAddressDraft((d) => ({ ...d, city: e.target.value }))
+                                        }
+                                        className="w-full px-4 py-3 bg-white border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                                        placeholder="City"
+                                      />
+                                      <input
+                                        value={addressDraft.state}
+                                        onChange={(e) =>
+                                          setAddressDraft((d) => ({ ...d, state: e.target.value }))
+                                        }
+                                        className="w-full px-4 py-3 bg-white border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                                        placeholder="State"
+                                      />
+                                    </div>
+                                    <input
+                                      value={addressDraft.pincode}
+                                      onChange={(e) =>
+                                        setAddressDraft((d) => ({ ...d, pincode: e.target.value }))
+                                      }
+                                      className="w-full px-4 py-3 bg-white border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                                      placeholder="Pincode"
+                                    />
+                                  </div>
+
+                                  <div className="mt-4 flex gap-3">
+                                    <button
+                                      onClick={async () => {
+                                        const next = addresses.map((a, i) =>
+                                          i === idx ? { ...addressDraft } : a
+                                        );
+                                        await handleSaveAddresses(next);
+                                        setEditingAddressIndex(null);
+                                      }}
+                                      className="text-xs bg-[#C65A00] text-white font-medium px-3 py-2 rounded-full hover:bg-[#2B1B12] transition-colors"
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setEditingAddressIndex(null);
+                                      }}
+                                      className="text-xs text-[#C65A00] font-medium hover:underline"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <p className="font-medium text-[#2B1B12] mb-1">{addr.fullName}</p>
+                                  <p className="text-sm text-[#7A5C3A] mb-3">{addr.phone}</p>
+                                   <p className="text-sm text-[#7A5C3A] leading-relaxed">
+                                     {addr.street}
+                                     <br />
+                                     {addr.city}, {addr.state} {addr.pincode}
+                                   </p>
+                                  <div className="mt-4 flex gap-3">
+                                    <button
+                                      onClick={() => {
+                                        setEditingAddressIndex(idx);
+                                        setAddressDraft({ ...addr });
+                                      }}
+                                      className="text-xs text-[#C65A00] font-medium hover:underline"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={async () => {
+                                        const next = addresses.filter((_, i) => i !== idx);
+                                        await handleSaveAddresses(next);
+                                      }}
+                                      className="text-xs text-red-600 font-medium hover:underline"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {addingAddress && (
+                        <div className="mt-6 bg-white rounded-2xl border border-[#E8D5B0] p-6">
+                          <h3 className="font-serif text-lg text-[#2B1B12] mb-4">Add Address</h3>
+                          <div className="grid sm:grid-cols-2 gap-4">
+                            <input
+                              value={newAddressDraft.fullName}
+                              onChange={(e) => setNewAddressDraft((d) => ({ ...d, fullName: e.target.value }))}
+                              className="w-full px-4 py-3 bg-[#FFF7E6] border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                              placeholder="Full Name"
+                            />
+                            <input
+                              value={newAddressDraft.phone}
+                              onChange={(e) => setNewAddressDraft((d) => ({ ...d, phone: e.target.value }))}
+                              className="w-full px-4 py-3 bg-[#FFF7E6] border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                              placeholder="Phone"
+                            />
+                             <input
+                               value={newAddressDraft.street}
+                               onChange={(e) => setNewAddressDraft((d) => ({ ...d, street: e.target.value }))}
+                               className="w-full px-4 py-3 bg-[#FFF7E6] border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all sm:col-span-2"
+                               placeholder="Street"
+                             />
+                            <input
+                              value={newAddressDraft.city}
+                              onChange={(e) => setNewAddressDraft((d) => ({ ...d, city: e.target.value }))}
+                              className="w-full px-4 py-3 bg-[#FFF7E6] border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                              placeholder="City"
+                            />
+                            <input
+                              value={newAddressDraft.state}
+                              onChange={(e) => setNewAddressDraft((d) => ({ ...d, state: e.target.value }))}
+                              className="w-full px-4 py-3 bg-[#FFF7E6] border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all"
+                              placeholder="State"
+                            />
+                            <input
+                              value={newAddressDraft.pincode}
+                              onChange={(e) => setNewAddressDraft((d) => ({ ...d, pincode: e.target.value }))}
+                              className="w-full px-4 py-3 bg-[#FFF7E6] border border-[#E8D5B0] rounded-xl focus:ring-2 focus:ring-[#C65A00] outline-none transition-all sm:col-span-2"
+                              placeholder="Pincode"
+                            />
+                          </div>
+                          <div className="mt-5 flex gap-3">
+                            <button
+                              onClick={async () => {
+                                const next = [...addresses, { ...newAddressDraft }];
+                                await handleSaveAddresses(next);
+                                setAddingAddress(false);
+                                 setNewAddressDraft({
+                                   fullName: "",
+                                   phone: "",
+                                   street: "",
+                                   city: "",
+                                   state: "",
+                                   pincode: "",
+                                   country: "India"
+                                 });
+                              }}
+                              className="flex-1 bg-[#C65A00] text-white px-8 py-3 rounded-xl font-medium transition-colors hover:bg-[#2B1B12]"
+                            >
+                              Save Address
+                            </button>
+                            <button
+                              onClick={() => setAddingAddress(false)}
+                              className="text-[#C65A00] border border-[#E8D5B0] bg-white px-6 py-3 rounded-xl font-medium hover:bg-[#FFF7E6] transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               )}
 

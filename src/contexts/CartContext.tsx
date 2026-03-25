@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useReducer, ReactNode } from "react";
-import { Product } from "@/data/products";
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from "react";
+import { Product } from "@/types/product";
 
 export interface CartItem {
   product: Product;
@@ -20,10 +20,19 @@ type CartAction =
   | { type: "CLEAR_CART" }
   | { type: "TOGGLE_CART" }
   | { type: "OPEN_CART" }
-  | { type: "CLOSE_CART" };
+  | { type: "CLOSE_CART" }
+  | { type: "HYDRATE"; items: CartItem[] };
+
+const CART_STORAGE_KEY = "zestora_cart";
+
+function getInitialState(): CartState {
+  return { items: [], isOpen: false };
+}
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
+    case "HYDRATE":
+      return { ...state, items: action.items };
     case "ADD_ITEM": {
       const existing = state.items.find((i) => i.product.id === action.product.id);
       if (existing) {
@@ -78,7 +87,27 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [], isOpen: false });
+  const [state, dispatch] = useReducer(cartReducer, undefined, getInitialState);
+
+  // Hydrate from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(CART_STORAGE_KEY);
+      if (stored) {
+        const items = JSON.parse(stored) as CartItem[];
+        if (Array.isArray(items) && items.length > 0) {
+          dispatch({ type: "HYDRATE", items });
+        }
+      }
+    } catch {}
+  }, []);
+
+  // Save to localStorage on every items change
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.items));
+    } catch {}
+  }, [state.items]);
 
   const totalItems = state.items.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = state.items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
@@ -108,3 +137,4 @@ export function useCart() {
   if (!ctx) throw new Error("useCart must be used within CartProvider");
   return ctx;
 }
+

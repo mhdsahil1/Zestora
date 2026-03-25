@@ -6,11 +6,9 @@ import { SlidersHorizontal, Grid3X3, Grid2X2, X, ChevronDown } from "lucide-reac
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
-import { products } from "@/data/products";
+import { useEffect } from "react";
+import { Product } from "@/types/product";
 
-const allCategories = ["All", ...Array.from(new Set(products.map((p) => p.category)))];
-const allCuisines = ["All", ...Array.from(new Set(products.flatMap((p) => p.cuisine || [])))];
-const allDietaries = ["All", ...Array.from(new Set(products.flatMap((p) => p.dietary || [])))];
 const sortOptions = [
   { value: "featured", label: "Featured" },
   { value: "price-asc", label: "Price: Low to High" },
@@ -19,9 +17,33 @@ const sortOptions = [
   { value: "newest", label: "Newest First" },
 ];
 
+const PRODUCTS_PER_PAGE = 20;
+
 function ShopContent() {
   const searchParams = useSearchParams();
   const initCategory = searchParams.get("category") || "All";
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/products?t=' + Date.now())
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setProducts(data.data);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch products:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const allCategories = useMemo(() => ["All", ...Array.from(new Set(products.map((p) => p.category)))], [products]);
+  const allCuisines = useMemo(() => ["All", ...Array.from(new Set(products.flatMap((p) => p.cuisine || [])))], [products]);
+  const allDietaries = useMemo(() => ["All", ...Array.from(new Set(products.flatMap((p) => p.dietary || [])))], [products]);
 
   const [selectedCategory, setSelectedCategory] = useState(initCategory);
   const [selectedCuisine, setSelectedCuisine] = useState("All");
@@ -31,6 +53,7 @@ function ShopContent() {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
 
   const filtered = useMemo(() => {
     let list = [...products];
@@ -235,19 +258,35 @@ function ShopContent() {
         )}
 
         {/* Product Grid */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-24">
+            <p className="font-serif text-2xl text-[#2B1B12] mb-2">Loading Spices...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-24">
             <p className="font-serif text-2xl text-[#2B1B12] mb-2">No spices found</p>
             <p className="text-[#7A5C3A] text-sm">Try adjusting your filters</p>
           </div>
         ) : (
-          <div className={`grid gap-5 lg:gap-6 grid-cols-2 ${
-            gridCols === 4 ? "md:grid-cols-3 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"
-          }`}>
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className={`grid gap-5 lg:gap-6 grid-cols-2 ${
+              gridCols === 4 ? "md:grid-cols-3 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {filtered.slice(0, visibleCount).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            {visibleCount < filtered.length && (
+              <div className="flex justify-center mt-12">
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + PRODUCTS_PER_PAGE)}
+                  className="px-8 py-3 bg-[#2B1B12] text-white font-medium rounded-full hover:bg-[#C65A00] transition-all duration-300"
+                >
+                  Load More ({filtered.length - visibleCount} remaining)
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

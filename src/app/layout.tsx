@@ -6,6 +6,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import FloatingIslandNav from "@/components/layout/FloatingIslandNav";
+import { AnalyticsWrapper } from "@/components/ui/AnalyticsWrapper";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -44,6 +45,7 @@ export default function RootLayout({
               {children}
               <FloatingIslandNav />
               <VisualEditsMessenger />
+              <AnalyticsWrapper />
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

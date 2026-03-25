@@ -27,6 +27,8 @@ async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      family: 4, // force IPv4 to fix querySrv ETIMEOUT on some local networks
+      serverSelectionTimeoutMS: 10000, 
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {

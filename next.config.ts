@@ -33,7 +33,11 @@ const nextConfig: NextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
-          }
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
         ],
       },
     ];
@@ -43,17 +47,12 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-      {
-        protocol: 'http',
-        hostname: '**',
-      },
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http', hostname: '**' },
     ],
   },
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
+  // TODO: Remove these once all TypeScript errors are fixed
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -70,3 +69,4 @@ const nextConfig: NextConfig = {
 } as NextConfig;
 
 export default nextConfig;
+

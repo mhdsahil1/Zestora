@@ -4,8 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { X, Search, ArrowRight } from "lucide-react";
-import { products } from "@/data/products";
-import { Product } from "@/data/products";
+import { Product } from "@/types/product";
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -33,15 +32,21 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       setResults([]);
       return;
     }
-    const q = query.toLowerCase();
-    const filtered = products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        p.origin.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q))
-    );
-    setResults(filtered.slice(0, 5));
+    
+    const fetchResults = async () => {
+      try {
+        const res = await fetch(`/api/products?search=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (data.success) {
+          setResults(data.data.slice(0, 5));
+        }
+      } catch (err) {
+        console.error("Search failed:", err);
+      }
+    };
+
+    const timer = setTimeout(fetchResults, 300);
+    return () => clearTimeout(timer);
   }, [query]);
 
   useEffect(() => {

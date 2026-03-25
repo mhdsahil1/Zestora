@@ -1,212 +1,112 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Search, Loader2, Edit2, CheckCircle2 } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import { Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import Link from "next/link";
 
-interface AdminOrder {
-  _id: string;
-  totalPrice: number;
-  paymentMethod: string;
-  paymentStatus: string;
-  orderStatus: string;
-  createdAt: string;
-  userId: {
-    name: string;
-    email: string;
-    phone: string;
-  };
-}
-
-export default function AdminOrdersPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  const [orders, setOrders] = useState<AdminOrder[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+export default function AdminOrders() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
+  const fetchOrders = () => {
+     setLoading(true);
+     fetch("/api/admin/orders").then(r => r.json()).then(d => {
+        if (d.orders) setOrders(d.orders);
+        else if (Array.isArray(d)) setOrders(d);
+        setLoading(false);
+     });
+  };
+
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    } else if (status === "authenticated") {
-      // @ts-ignore
-      if (session?.user?.role !== "admin") {
-        toast.error("Unauthorized access.");
-        router.push("/");
-      } else {
-        fetchOrders();
-      }
-    }
-  }, [status, router, session]);
+    fetchOrders();
+  }, []);
 
-  const fetchOrders = async () => {
-    try {
-      const res = await fetch("/api/admin/orders");
-      if (res.ok) {
-        const data = await res.json();
-        setOrders(data.orders);
-      } else {
-        toast.error("Failed to fetch orders");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleStatusUpdate = async (id: string, newStatus: string, type: "orderStatus" | "paymentStatus") => {
+  const handleStatusChange = async (id: string, newStatus: string) => {
     setUpdatingId(id);
-    try {
-      const res = await fetch(`/api/admin/orders/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [type]: newStatus }),
-      });
-
-      if (res.ok) {
-        toast.success("Order updated successfully");
-        setOrders(orders.map(order => 
-          order._id === id ? { ...order, [type]: newStatus } : order
-        ));
-      } else {
-        toast.error("Update failed");
-      }
-    } catch (error) {
-      toast.error("Update failed");
-    } finally {
-      setUpdatingId(null);
+    const res = await fetch(`/api/admin/orders/${id}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderStatus: newStatus })
+    });
+    if (res.ok) {
+       toast.success("Order status updated!");
+       setOrders(orders.map(o => o._id === id ? { ...o, orderStatus: newStatus } : o));
+    } else {
+       toast.error("Failed to update status");
     }
+    setUpdatingId(null);
   };
 
-  const filteredOrders = orders.filter(order => 
-    order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.userId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.userId?.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  if (status === "loading" || isLoading) {
-    return (
-      <div className="min-h-screen bg-[#FAF8F5] pt-24 pb-12 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#D4A373] animate-spin" />
-      </div>
-    );
-  }
+  if (loading) return <div className="flex justify-center pt-40 bg-[#FFF7E6] min-h-screen"><Navbar /><Loader2 className="animate-spin text-[#C65A00] w-8 h-8" /></div>;
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pt-24 pb-12">
-      <div className="container mx-auto px-4 max-w-7xl">
-        
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-serif text-[#4A3B32] font-bold">Manage Orders</h1>
-            <p className="text-[#8C7A6B]">Admin Dashboard</p>
-          </div>
-          
-          <div className="relative w-full md:w-72">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#8C7A6B]">
-              <Search size={18} />
-            </div>
-            <input
-              type="text"
-              placeholder="Search orders, customers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-[#E8E1D9] rounded-xl focus:ring-2 focus:ring-[#D4A373] outline-none"
-            />
-          </div>
+    <main className="min-h-screen bg-[#FFF7E6]">
+      <Navbar />
+      <div className="pt-28 pb-12 px-6 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+           <h1 className="text-3xl font-serif font-bold text-[#2B1B12]">Manage Orders</h1>
+           <div className="flex gap-4 items-center">
+             <Link href="/admin/dashboard" className="text-[#C65A00] font-medium hover:underline">← Dashboard</Link>
+             <button onClick={fetchOrders} className="flex flex-row items-center gap-2 text-[#C65A00] font-medium"><RefreshCw size={18} /> Refresh</button>
+           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-[#E8E1D9] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[#FAF8F5] border-b border-[#E8E1D9] text-[#8C7A6B] text-sm font-bold uppercase tracking-wider">
-                  <th className="p-4 pl-6">Order Info</th>
-                  <th className="p-4">Customer</th>
-                  <th className="p-4">Payment</th>
-                  <th className="p-4">Status & Action</th>
+        <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B0] overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[800px]">
+             <thead>
+                <tr className="bg-[#FFF7E6]/50 text-[#7A5C3A] text-sm font-semibold border-b border-[#E8D5B0]">
+                   <th className="p-4 rounded-tl-2xl">Order ID</th>
+                   <th className="p-4">Date</th>
+                   <th className="p-4">Customer</th>
+                   <th className="p-4">Amount</th>
+                   <th className="p-4">Payment</th>
+                   <th className="p-4 rounded-tr-2xl">Fulfillment Status</th>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E8E1D9]">
-                {filteredOrders.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="p-8 text-center text-[#8C7A6B]">
-                      No orders found matching "{searchTerm}"
-                    </td>
-                  </tr>
-                ) : (
-                  filteredOrders.map((order) => (
-                    <tr key={order._id} className="hover:bg-[#FAF8F5]/50 transition-colors">
-                      <td className="p-4 pl-6">
-                        <div className="font-mono text-xs font-bold text-[#4A3B32] bg-[#E8E1D9]/50 inline-block px-2 py-1 rounded mb-1">
-                          {order._id.substring(order._id.length - 8).toUpperCase()}
-                        </div>
-                        <div className="text-sm font-medium text-[#4A3B32]">₹{order.totalPrice.toLocaleString()}</div>
-                        <div className="text-xs text-[#8C7A6B]">
-                          {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                            day: 'numeric', month: 'short', year: 'numeric'
-                          })}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="font-medium text-[#4A3B32] text-sm">{order.userId?.name || "Deleted User"}</div>
-                        <div className="text-xs text-[#8C7A6B]">{order.userId?.email}</div>
-                        <div className="text-xs text-[#8C7A6B]">{order.userId?.phone}</div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex flex-col gap-2 items-start">
-                           <span className="text-xs font-bold text-[#8C7A6B] bg-white border border-[#E8E1D9] px-2 py-0.5 rounded shadow-sm">
-                             {order.paymentMethod}
-                           </span>
-                           <select 
-                              disabled={updatingId === order._id}
-                              value={order.paymentStatus}
-                              onChange={(e) => handleStatusUpdate(order._id, e.target.value, "paymentStatus")}
-                              className={`text-xs font-bold rounded px-2 py-1 outline-none cursor-pointer border ${
-                                order.paymentStatus === "COMPLETED" ? "bg-green-50 text-green-700 border-green-200" 
-                                : order.paymentStatus === "FAILED" ? "bg-red-50 text-red-700 border-red-200"
-                                : "bg-yellow-50 text-yellow-700 border-yellow-200"
-                              }`}
-                           >
-                              <option value="PENDING">Pending</option>
-                              <option value="COMPLETED">Completed</option>
-                              <option value="FAILED">Failed</option>
-                           </select>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                         <select 
-                            disabled={updatingId === order._id}
-                            value={order.orderStatus}
-                            onChange={(e) => handleStatusUpdate(order._id, e.target.value, "orderStatus")}
-                            className="bg-white border border-[#E8E1D9] text-[#4A3B32] text-sm font-medium rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[#D4A373] cursor-pointer shadow-sm w-44"
-                         >
-                            <option value="Order Placed">Order Placed</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Out for Delivery">Out for Delivery</option>
-                            <option value="Delivered">Delivered</option>
-                         </select>
-                         {updatingId === order._id && (
-                            <span className="ml-2 inline-block animate-spin text-[#D4A373]">
-                              <Loader2 size={16} />
-                            </span>
-                         )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+             </thead>
+             <tbody className="divide-y divide-[#E8D5B0]">
+               {orders.map(order => (
+                 <tr key={order._id} className="hover:bg-[#FFF7E6]/30 text-sm">
+                   <td className="p-4 font-mono text-[#C65A00]">{order._id.slice(-8).toUpperCase()}</td>
+                   <td className="p-4 text-[#7A5C3A]">{format(new Date(order.createdAt), "MMM dd, yyyy")}</td>
+                   <td className="p-4 font-medium text-[#2B1B12]">
+                     {order.userId?.name || order.deliveryAddress?.fullName || "Guest"}
+                     <div className="text-xs text-[#7A5C3A] font-normal">{order.userId?.email || ''}</div>
+                   </td>
+                   <td className="p-4 font-bold text-[#2B1B12]">${order.totalPrice.toFixed(2)}</td>
+                   <td className="p-4">
+                     <span className={`px-2.5 py-1 rounded-md text-xs font-bold tracking-wide ${order.paymentStatus === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        {order.paymentStatus}
+                     </span>
+                     <div className="text-xs text-[#7A5C3A] mt-1">{order.paymentMethod}</div>
+                   </td>
+                   <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <select 
+                          value={order.orderStatus} 
+                          disabled={updatingId === order._id}
+                          onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                          className="border border-[#E8D5B0] bg-white rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#C65A00]/50 min-w-[140px]"
+                        >
+                          <option value="Order Placed">Order Placed</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Out for Delivery">Out for Delivery</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                        {updatingId === order._id && <Loader2 size={16} className="animate-spin text-[#C65A00]" />}
+                      </div>
+                   </td>
+                 </tr>
+               ))}
+             </tbody>
+          </table>
+          {orders.length === 0 && <div className="p-12 text-center text-[#7A5C3A]">No orders found.</div>}
         </div>
-        
       </div>
-    </div>
+    </main>
   );
 }

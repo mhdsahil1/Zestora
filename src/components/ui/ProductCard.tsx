@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingCart, Star, Leaf } from "lucide-react";
-import { Product } from "@/data/products";
+import { Product } from "@/types/product";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 

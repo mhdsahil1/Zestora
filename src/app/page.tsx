@@ -3,12 +3,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Star, Leaf, Award, Truck, Shield, ChevronRight, Play } from "lucide-react";
+import { ArrowRight, Star, Leaf, ChevronRight, Play } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
 import BentoGridFeatures from "@/components/ui/BentoGridFeatures";
-import { products, categories, testimonials, stats } from "@/data/products";
+import { categories, testimonials, stats } from "@/data/products";
+import { Product } from "@/types/product";
 
 // Intersection Observer hook for scroll animations
 function useInView(threshold = 0.05) {
@@ -47,10 +48,6 @@ function Counter({ value }: { value: string }) {
 
   return <span ref={ref}>{count}{suffix}</span>;
 }
-
-const featuredProducts = products
-  .filter((p) => p.featured)
-  .slice(0, 8);
 
 const trustLogos = [
   { name: "USDA Organic", bg: "bg-green-50" },
@@ -197,6 +194,16 @@ export default function HomePage() {
 // ─── FEATURED PRODUCTS SECTION ───
 function FeaturedSection() {
   const { ref, inView } = useInView();
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetch('/api/products?featured=true')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setFeaturedProducts(data.data.slice(0, 8));
+      })
+      .catch(err => console.error("Error fetching featured products:", err));
+  }, []);
   return (
     <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className={`text-center mb-14 transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
@@ -285,124 +292,6 @@ function CategoriesSection() {
   );
 }
 
-// ─── WHY ZESTORA SECTION ───
-function WhyZestoraSection() {
-  const { ref, inView } = useInView();
-  const features = [
-    {
-      icon: Leaf,
-      title: "100% Organic",
-      description: "Every spice we source is certified organic, grown without pesticides or synthetic fertilizers. Nature's way, always.",
-      color: "bg-green-50 text-green-700",
-    },
-    {
-      icon: Award,
-      title: "Farm Sourced",
-      description: "We partner directly with farmers across India, Sri Lanka, and Vietnam—cutting out middlemen for fresher spices.",
-      color: "bg-amber-50 text-amber-700",
-    },
-    {
-      icon: Shield,
-      title: "Fresh Ground",
-      description: "Ground to order in small batches to preserve maximum volatile oils, aroma, and nutritional potency.",
-      color: "bg-orange-50 text-orange-700",
-    },
-    {
-      icon: Truck,
-      title: "Free Shipping",
-      description: "Complimentary shipping on all orders over $40. Delivered in eco-friendly, airtight packaging to lock in freshness.",
-      color: "bg-blue-50 text-blue-700",
-    },
-  ];
-
-  return (
-    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="grid lg:grid-cols-2 gap-16 items-center">
-        {/* Left: Image collage */}
-        <div className={`relative transition-all duration-700 ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <div className="relative h-52 rounded-2xl overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1607622750671-6cd9a99eabd1?w=400&q=80"
-                    alt="Spice farm"
-                    fill
-                    sizes="20vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="relative h-36 rounded-2xl overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=400&q=80"
-                    alt="Turmeric"
-                    fill
-                    sizes="20vw"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-              <div className="space-y-4 pt-8">
-                <div className="relative h-36 rounded-2xl overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&q=80"
-                    alt="Cardamom"
-                    fill
-                    sizes="20vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="relative h-52 rounded-2xl overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80"
-                    alt="Black pepper"
-                    fill
-                    sizes="20vw"
-                    className="object-cover"
-                  />
-                </div>
-            </div>
-          </div>
-
-          {/* Floating badge */}
-          <div className="absolute -bottom-5 -right-5 bg-[#C65A00] text-white rounded-2xl p-5 shadow-xl">
-            <p className="font-serif text-3xl font-bold">15+</p>
-            <p className="text-xs text-white/70 mt-1">Years of<br/>Expertise</p>
-          </div>
-        </div>
-
-        {/* Right: Content */}
-        <div className={`transition-all duration-700 delay-200 ${inView ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}>
-          <p className="text-xs uppercase tracking-[0.25em] text-[#C65A00] font-medium mb-4">
-            Why Choose Zestora
-          </p>
-          <h2 className="font-serif text-4xl lg:text-5xl text-[#2B1B12] mb-5 leading-tight">
-            Quality You Can Taste,
-            <br />
-            <span className="gradient-text">Trust You Can Feel</span>
-          </h2>
-          <div className="section-divider mb-6" />
-          <p className="text-[#7A5C3A] leading-relaxed mb-10 text-sm">
-            We believe the best cooking starts with the best ingredients. Every spice in our collection is traceable to its source, handled with care, and delivered at peak freshness.
-          </p>
-
-          <div className="grid sm:grid-cols-2 gap-5">
-            {features.map((feat, i) => (
-              <div key={i} className="flex gap-4 items-start">
-                <div className={`${feat.color} p-3 rounded-xl flex-shrink-0`}>
-                  <feat.icon className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-serif font-semibold text-[#2B1B12] mb-1">{feat.title}</h4>
-                  <p className="text-xs text-[#7A5C3A] leading-relaxed">{feat.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // ─── BRAND STORY SECTION ───
 function BrandStorySection() {

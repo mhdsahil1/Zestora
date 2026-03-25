@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, notFound } from "next/navigation";
 import {
   Star, Heart, ShoppingCart, Leaf, MapPin,
   Package, CheckCircle, Minus, Plus
@@ -12,7 +11,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
 import FlavorVisualizer from "@/components/ui/FlavorVisualizer";
-import { products } from "@/data/products";
+import { Product } from "@/types/product";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 
@@ -22,10 +21,14 @@ const mockReviews = [
   { id: 3, name: "Meera Nair", rating: 4, date: "Feb 2026", text: "Very good quality. The origin story behind each spice adds to the whole experience. Highly recommend.", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80", aroma: 5, freshness: 4, spiciness: 5 },
 ];
 
-export default function ProductDetailPage() {
-  const params = useParams();
-  const slug = params?.slug as string;
-  const product = products.find((p) => p.slug === slug);
+export default function ProductDetailPage({ 
+  initialProduct, 
+  relatedProducts 
+}: { 
+  initialProduct: Product, 
+  relatedProducts: Product[] 
+}) {
+  const product = initialProduct;
 
   const { addItem } = useCart();
   const { toggle, isWishlisted } = useWishlist();
@@ -38,9 +41,7 @@ export default function ProductDetailPage() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [reviewFilter, setReviewFilter] = useState("all");
 
-  if (!product) return notFound();
-
-  const related = products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4);
+  const related = relatedProducts;
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null;

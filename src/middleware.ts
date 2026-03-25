@@ -1,25 +1,41 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/mongodb";
+import User from "@/models/User";
 
-export default withAuth(
-  function middleware(req) {
-    // If the user is trying to access an admin route but is not an admin, redirect them
-    if (
-      req.nextUrl.pathname.startsWith("/admin") &&
-      req.nextauth.token?.role !== "admin"
-    ) {
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export default async function middleware(req: NextRequest) {
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  if (req.nextUrl.pathname.startsWith("/admin")) {
+    // Only admins can access /admin routes (role is validated against MongoDB).
+    if (!token?.email) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      // Must return true to trigger the middleware function above, or if we want unauthenticated users to be redirected to login automatically, we return !!token
-      authorized: ({ token }) => !!token,
-    },
+
+    await dbConnect();
+
+    const normalizedEmail = String(token.email).trim().toLowerCase();
+    const dbUser = await User.findOne({
+      email: { $regex: new RegExp(`^${escapeRegExp(normalizedEmail)}$`, "i") },
+    });
+
+    if (!dbUser || dbUser.role !== "admin") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   }
-);
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: ["/admin/:path*"],
+  runtime: "nodejs",
 };
+

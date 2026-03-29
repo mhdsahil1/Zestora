@@ -28,7 +28,11 @@ export default function AdminDashboard() {
       <div className="pt-28 pb-12 px-6 max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
            <h1 className="text-3xl font-serif font-bold text-[#2B1B12]">Admin Dashboard</h1>
-           <Link href="/admin/orders" className="bg-[#C65A00] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#D4AF37] transition-colors">Manage Orders</Link>
+           <div className="flex gap-3 items-center">
+             <Link href="/admin/add-product" className="bg-[#2B1B12] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#3d2a1f] transition-colors text-sm">+ Add Product</Link>
+             <Link href="/admin/products" className="bg-[#D4AF37] text-[#2B1B12] px-4 py-2 rounded-lg font-medium hover:bg-[#c9a42e] transition-colors text-sm">Products</Link>
+             <Link href="/admin/orders" className="bg-[#C65A00] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#a84d00] transition-colors text-sm">Orders</Link>
+           </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

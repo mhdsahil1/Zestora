@@ -45,12 +45,19 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: '**' },
-      { protocol: 'http', hostname: '**' },
-    ],
-  },
+ images: {
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: 'res.cloudinary.com',
+      pathname: '/dhoxsrhbe/**',
+    },
+    {
+      protocol: 'https',
+      hostname: 'images.unsplash.com',
+    },
+  ],
+},
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
   // TODO: Remove these once all TypeScript errors are fixed
   typescript: {

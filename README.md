@@ -33,12 +33,10 @@ Payment → Razorpay
 
 ## Demo Accounts
 User:
-email: testuser@example.com  
+email: zestoraspicesindia@gmail.com
 password: 123456  
 
-Admin:
-email: admin@example.com  
-password: 123456  
+
 
 ## Live Demo
 (Will add after deployment)

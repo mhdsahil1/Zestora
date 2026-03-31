@@ -1,9 +1,11 @@
+export const dynamic = "force-dynamic";
+
 import { MetadataRoute } from 'next';
 import dbConnect from '@/lib/mongodb';
 import ProductModel from '@/models/Product';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zestora.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://v0-zestora-ie.vercel.app';
 
   await dbConnect();
   const products = await ProductModel.find({}, 'slug').lean();

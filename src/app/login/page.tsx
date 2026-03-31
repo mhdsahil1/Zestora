@@ -176,9 +176,61 @@ function LoginContent() {
   );
 }
 
+function LoginSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4 overflow-hidden relative">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#D4A373] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#8B5A2B] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10 animate-pulse">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/40">
+          <div className="p-8 pb-6 text-center flex flex-col items-center">
+            <div className="h-8 bg-[#E8E1D9] rounded-lg w-48 mb-3"></div>
+            <div className="h-4 bg-[#E8E1D9]/70 rounded-md w-64"></div>
+          </div>
+
+          <div className="p-8 pt-0 space-y-5">
+            <div className="space-y-2">
+              <div className="h-4 bg-[#E8E1D9] rounded-md w-24 ml-1"></div>
+              <div className="h-12 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl w-full"></div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center ml-1">
+                <div className="h-4 bg-[#E8E1D9] rounded-md w-20"></div>
+                <div className="h-4 bg-[#E8E1D9]/70 rounded-md w-16"></div>
+              </div>
+              <div className="h-12 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl w-full"></div>
+            </div>
+
+            <div className="h-14 bg-[#E8E1D9] rounded-xl w-full mt-2"></div>
+
+            <div className="relative flex items-center py-2">
+              <div className="flex-grow border-t border-[#E8E1D9]"></div>
+              <div className="h-3 bg-[#E8E1D9] rounded-md w-24 mx-4"></div>
+              <div className="flex-grow border-t border-[#E8E1D9]"></div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="h-12 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl w-full"></div>
+              <div className="h-12 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl w-full"></div>
+            </div>
+          </div>
+
+          <div className="px-8 py-5 bg-[#FAF8F5]/80 border-t border-[#E8E1D9] flex justify-center">
+            <div className="h-4 bg-[#E8E1D9] rounded-md w-56"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4">Loading...</div>}>
+    <Suspense fallback={<LoginSkeleton />}>
       <LoginContent />
     </Suspense>
   );

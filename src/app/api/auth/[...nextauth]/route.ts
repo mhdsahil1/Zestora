@@ -7,6 +7,10 @@ import User from "@/models/User";
 import { z } from "zod";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
+// Fix Node 18+ IPv6 DNS resolution issues for Google APIs which cause OAUTH_CALLBACK_ERROR timeouts
+import dns from "node:dns";
+dns.setDefaultResultOrder("ipv4first");
+
 const credentialsSchema = z.object({
   email: z.string().email("Invalid email").trim().toLowerCase(),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -28,6 +32,9 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      httpOptions: {
+        timeout: 10000,
+      },
     }),
     CredentialsProvider({
       name: "Credentials",

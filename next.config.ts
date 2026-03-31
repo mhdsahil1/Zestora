@@ -45,19 +45,20 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
- images: {
-  remotePatterns: [
-    {
-      protocol: 'https',
-      hostname: 'res.cloudinary.com',
-      pathname: '/dhoxsrhbe/**',
-    },
-    {
-      protocol: 'https',
-      hostname: 'images.unsplash.com',
-    },
-  ],
-},
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
+    ],
+  },
+  // Allow Next.js requests from WSL or external local environments
+  allowedDevOrigins: ["192.168.137.1", "localhost"],
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
   // TODO: Remove these once all TypeScript errors are fixed
   typescript: {

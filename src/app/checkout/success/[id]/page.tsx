@@ -12,11 +12,16 @@ export default function OrderSuccessPage() {
   const [mounted, setMounted] = useState(false);
   const { clearCart } = useCart();
   
-  // We mock fetching real data for the UI since the focus is UX
   useEffect(() => {
     setMounted(true);
-    clearCart(); // Safety clear
-  }, [clearCart]);
+    // Use setTimeout to allow the initial render to complete before clearing cart
+    // This prevents any instantaneous re-render loops during hydration
+    const timer = setTimeout(() => {
+      clearCart();
+    }, 100);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!mounted) return null;
 

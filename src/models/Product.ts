@@ -49,7 +49,7 @@ const ProductSchema = new mongoose.Schema(
 
     subscribeAndSaveDiscount: Number,
   },
-  { timestamps: true }
+  { timestamps: true, suppressReservedKeysWarning: true }
 );
 
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);

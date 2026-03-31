@@ -64,7 +64,6 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-// Ensure unique email at the DB level as well.
-UserSchema.index({ email: 1 }, { unique: true });
+// Ensure unique email at the DB level via Schema definition.
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);

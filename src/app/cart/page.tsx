@@ -5,41 +5,31 @@ import { ShoppingBag, ArrowRight } from "lucide-react"
 import { CartItemCard, type CartItemType } from "@/components/ui/CartItemCard"
 import { OrderSummary } from "@/components/ui/OrderSummary"
 import { PrimaryButton } from "@/components/ui/PrimaryButton"
-
-const initialItems: CartItemType[] = [
-  {
-    id: "1",
-    name: "Premium Saffron Threads",
-    description: "Hand-picked, grade A saffron from Pampore. Perfect for biryanis and desserts.",
-    price: 25.00,
-    quantity: 1,
-    image: "/products/img_1_1774022331147.jpg"
-  },
-  {
-    id: "2",
-    name: "Organic Turmeric Powder",
-    description: "High curcumin content, earthy and warm. Sourced from sustainable farms.",
-    price: 12.50,
-    quantity: 2,
-    image: "/products/img_2_1774022333054.webp"
-  }
-]
+import { useCart } from "@/contexts/CartContext"
 
 export default function CartPage() {
-  const [items, setItems] = React.useState<CartItemType[]>(initialItems)
+  const { state, updateQuantity, removeItem, totalPrice } = useCart()
+  
+  // Transform CartContext items into the UI's expected format
+  const items: CartItemType[] = state.items.map(item => ({
+    id: item.product.id,
+    name: item.product.name,
+    description: item.product.shortDescription || item.product.category,
+    price: item.product.price,
+    quantity: item.quantity,
+    image: item.product.image || (item.product.images && item.product.images[0]) || ""
+  }))
 
   const handleUpdateQuantity = (id: string, newQuantity: number) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    ))
+    updateQuantity(id, newQuantity)
   }
 
   const handleRemove = (id: string) => {
-    setItems(items.filter(item => item.id !== id))
+    removeItem(id)
   }
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = subtotal > 50 ? 0 : 5
+  const subtotal = totalPrice
+  const shipping = subtotal > 50 || subtotal === 0 ? 0 : 5
   // If no items, total is 0
   const total = items.length > 0 ? subtotal + shipping : 0
 

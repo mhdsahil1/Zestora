@@ -25,13 +25,13 @@ export default function ContactPage() {
     {
       icon: Mail,
       title: "Email Us",
-      lines: ["hello@zestora.com", "orders@zestora.com"],
+      lines: ["zestoraspicesindia@gmail.com", "orders@zestora.com"],
       color: "bg-amber-50 text-amber-700",
     },
     {
       icon: Phone,
       title: "Call Us",
-      lines: ["+91 98765 43210", "Mon–Sat, 9am–6pm IST"],
+      lines: ["+919900629597", "Mon–Sat, 9am–6pm IST"],
       color: "bg-green-50 text-green-700",
     },
     {

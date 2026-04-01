@@ -21,13 +21,41 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Zestora – Premium Organic Spices",
+  title: {
+    default: "Zestora – Premium Organic Spices",
+    template: "%s | Zestora",
+  },
   description: "Discover authentic, fresh, and organic spices sourced directly from farms. Pure Spices. Real Flavor.",
-  keywords: "organic spices, premium spices, turmeric, cardamom, black pepper, saffron, farm fresh spices",
+  keywords: ["organic spices", "premium spices", "turmeric", "cardamom", "black pepper", "saffron", "farm fresh spices"],
+  authors: [{ name: "Zestora" }],
+  creator: "Zestora",
+  publisher: "Zestora",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://zestora.com'),
   openGraph: {
     title: "Zestora – Premium Organic Spices",
     description: "Pure Spices. Real Flavor. Farm-sourced organic spices delivered to your door.",
     type: "website",
+    locale: "en_IN",
+    siteName: "Zestora",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Zestora – Premium Organic Spices",
+    description: "Pure Spices. Real Flavor. Farm-sourced organic spices delivered to your door.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-site-verification-code",
   },
 };
 

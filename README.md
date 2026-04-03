@@ -33,7 +33,7 @@ Payment → Razorpay
 
 ## Demo Accounts
 User:
-email: zestoraspicesindia@gmail.com
+email:admin@gmail.com
 password: 123456  
 
 

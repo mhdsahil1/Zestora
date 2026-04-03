@@ -65,8 +65,8 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
         <button
           onClick={() => toggle(product)}
           className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${wishlisted
-              ? "bg-[#C65A00] text-white"
-              : "bg-white/90 text-[#7A5C3A] hover:bg-[#C65A00] hover:text-white"
+            ? "bg-[#C65A00] text-white"
+            : "bg-white/90 text-[#7A5C3A] hover:bg-[#C65A00] hover:text-white"
             }`}
         >
           <Heart className={`w-4 h-4 ${wishlisted ? "fill-current" : ""}`} />
@@ -106,8 +106,8 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
             <Star
               key={s}
               className={`w-3 h-3 ${s <= Math.round(product.rating)
-                  ? "fill-[#D4AF37] text-[#D4AF37]"
-                  : "text-[#E8D5B0]"
+                ? "fill-[#D4AF37] text-[#D4AF37]"
+                : "text-[#E8D5B0]"
                 }`}
             />
           ))}

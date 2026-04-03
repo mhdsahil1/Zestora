@@ -17,19 +17,26 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
   const { addItem } = useCart();
   const { toggle, isWishlisted } = useWishlist();
   const wishlisted = isWishlisted(product.id);
+
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null;
 
+  // Safe image handling (important)
+  const imageUrl =
+    product.image ||
+    (product.images && product.images.length > 0 ? product.images[0] : "/images/placeholder.png");
+
   return (
-    <div className={`group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-400 ${className}`}>
+    <div className={`group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${className}`}>
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-[#F5E6C8]">
-        <Link href={`/shop/${product.slug}`} className="relative block w-full h-full">
+        <Link href={`/shop/${product.slug}`} className="block w-full h-full relative">
           <Image
-            src={product.image}
+            src={imageUrl}
             alt={product.name}
             fill
+            unoptimized   // IMPORTANT: Fix for vusercontent / dev tunnel
             className="object-cover transition-transform duration-700 group-hover:scale-110"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
@@ -54,19 +61,18 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
           )}
         </div>
 
-        {/* Wishlist button */}
+        {/* Wishlist */}
         <button
           onClick={() => toggle(product)}
-          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
-            wishlisted
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${wishlisted
               ? "bg-[#C65A00] text-white"
               : "bg-white/90 text-[#7A5C3A] hover:bg-[#C65A00] hover:text-white"
-          }`}
+            }`}
         >
           <Heart className={`w-4 h-4 ${wishlisted ? "fill-current" : ""}`} />
         </button>
 
-        {/* Quick add overlay */}
+        {/* Add to cart */}
         <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
             onClick={() => addItem(product)}
@@ -81,7 +87,9 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
       {/* Info */}
       <div className="p-4">
         <div className="flex items-center gap-1.5 mb-1.5">
-          <span className="text-[10px] uppercase tracking-widest text-[#C65A00] font-medium">{product.category}</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#C65A00] font-medium">
+            {product.category}
+          </span>
           <span className="w-1 h-1 rounded-full bg-[#E8D5B0]" />
           <span className="text-[10px] text-[#7A5C3A]">{product.weight}</span>
         </div>
@@ -92,23 +100,33 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
           </h3>
         </Link>
 
+        {/* Rating */}
         <div className="flex items-center gap-1 mb-3">
-          {[1,2,3,4,5].map((s) => (
+          {[1, 2, 3, 4, 5].map((s) => (
             <Star
               key={s}
-              className={`w-3 h-3 ${s <= Math.round(product.rating) ? "fill-[#D4AF37] text-[#D4AF37]" : "text-[#E8D5B0]"}`}
+              className={`w-3 h-3 ${s <= Math.round(product.rating)
+                  ? "fill-[#D4AF37] text-[#D4AF37]"
+                  : "text-[#E8D5B0]"
+                }`}
             />
           ))}
           <span className="text-xs text-[#7A5C3A] ml-1">({product.reviewCount})</span>
         </div>
 
+        {/* Price */}
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <span className="font-bold text-lg text-[#C65A00]">${product.price.toFixed(2)}</span>
+            <span className="font-bold text-lg text-[#C65A00]">
+              ${product.price.toFixed(2)}
+            </span>
             {product.originalPrice && (
-              <span className="text-sm text-[#B09070] line-through">${product.originalPrice.toFixed(2)}</span>
+              <span className="text-sm text-[#B09070] line-through">
+                ${product.originalPrice.toFixed(2)}
+              </span>
             )}
           </div>
+
           <div className="flex items-center gap-1 text-[10px] text-green-700 bg-green-50 px-2 py-1 rounded-full">
             <Leaf className="w-3 h-3" />
             <span>Organic</span>

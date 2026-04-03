@@ -29,6 +29,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+*_log.txt
+*_results.txt
+*_errors.txt
+test_output.txt
+test_result.json
 
 # vercel
 .vercel
@@ -90,6 +96,5 @@ next-env.d.ts
 .kiro
 
 design-system
-scripts
 
 public/products

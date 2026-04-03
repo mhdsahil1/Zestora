@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
 
@@ -8,7 +8,7 @@ const CANCEL_ELIGIBLE_BEFORE = new Set(["Order Placed", "Processing", "Shipped"]
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -18,7 +18,7 @@ export async function PATCH(
 
     await dbConnect();
 
-    const orderId = params.id;
+    const { id: orderId } = await params;
     const isAdmin = (session.user as any).role === "admin";
     const userId = (session.user as any).id;
 
@@ -59,4 +59,3 @@ export async function PATCH(
     );
   }
 }
-

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
 import User from "@/models/User";
@@ -9,14 +9,8 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user || ((session.user as any).role !== "admin" && (session.user as any).email !== "admin@zestora.com")) {
-      // In strict production, uncomment to enforce true restriction instead of allowing demo bypass
-      // return NextResponse.json({ message: "Unauthorized. Admin access required." }, { status: 403 });
-      
-      // We will allow access if session exists to test Admin UI since seeding is tricky
-      if (!session || !session.user) {
-         return NextResponse.json({ message: "Unauthorized. Admin access required." }, { status: 403 });
-      }
+    if (!session?.user || (session.user as any).role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized. Admin access required." }, { status: 403 });
     }
 
     await dbConnect();

@@ -42,7 +42,7 @@ function FailurePageContent() {
             <div className="w-full space-y-3 flex flex-col sm:flex-row sm:space-y-0 sm:gap-4">
               <Button 
                 className="w-full sm:flex-1 bg-[#DC2626] hover:bg-[#DC2626]/90 text-white h-14 text-lg shadow-lg shadow-[#DC2626]/20 transition-all transform hover:-translate-y-1"
-                onClick={() => router.push("/payment/sandbox")}
+                onClick={() => router.push("/checkout")}
               >
                 <RefreshCcw className="mr-2 h-5 w-5" />
                 Try Again
@@ -50,7 +50,7 @@ function FailurePageContent() {
               <Button 
                 variant="outline"
                 className="w-full sm:flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 h-14 text-lg"
-                onClick={() => router.push("/checkout/payment")}
+                onClick={() => router.push("/checkout")}
               >
                 <ArrowLeft className="mr-2 h-5 w-5" />
                 Back to Checkout

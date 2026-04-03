@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
+import Inventory from "@/models/Inventory";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST(req: Request) {
@@ -34,19 +35,61 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Invalid payment signature." }, { status: 400 });
     }
 
-    // Update order in database
     await dbConnect();
-    const updatedOrder = await Order.findOneAndUpdate(
-      { _id: orderId, userId: (session.user as any).id },
-      { paymentStatus: "COMPLETED" },
-      { new: true }
-    );
+    const order = await Order.findOne({ _id: orderId, userId: (session.user as any).id });
 
-    if (!updatedOrder) {
+    if (!order) {
       return NextResponse.json({ message: "Order not found or unauthorized." }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, message: "Payment verified successfully." }, { status: 200 });
+    if (order.paymentStatus === "COMPLETED") {
+      return NextResponse.json(
+        { success: true, message: "Payment already verified.", orderId: order._id },
+        { status: 200 }
+      );
+    }
+
+    if (order.paymentStatus !== "PENDING") {
+      return NextResponse.json(
+        { message: `Order cannot be verified from status ${order.paymentStatus}.` },
+        { status: 400 }
+      );
+    }
+
+    const rollbacks: Array<{ productId: string; quantity: number }> = [];
+
+    for (const item of order.products) {
+      const updatedInventory = await Inventory.findOneAndUpdate(
+        { productId: item.productId, stock: { $gte: item.quantity } },
+        { $inc: { stock: -item.quantity } },
+        { new: true }
+      );
+
+      if (!updatedInventory) {
+        for (const rollback of rollbacks) {
+          await Inventory.updateOne(
+            { productId: rollback.productId },
+            { $inc: { stock: rollback.quantity } }
+          );
+        }
+
+        return NextResponse.json(
+          { message: `Insufficient stock for ${item.name}.`, stockError: true },
+          { status: 400 }
+        );
+      }
+
+      rollbacks.push({ productId: item.productId, quantity: item.quantity });
+    }
+
+    order.paymentStatus = "COMPLETED";
+    order.orderStatus = "Processing";
+    await order.save();
+
+    return NextResponse.json(
+      { success: true, message: "Payment verified successfully.", orderId: order._id },
+      { status: 200 }
+    );
   } catch (error: any) {
     console.error("[Payment Verify API Error]:", error);
     return NextResponse.json({ message: "Payment verification failed." }, { status: 500 });

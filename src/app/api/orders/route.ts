@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Inventory from "@/models/Inventory";
@@ -52,6 +52,16 @@ export async function POST(req: Request) {
     }
 
     const { products, paymentMethod, deliveryAddress } = validated.data;
+    const hasRazorpayConfig = Boolean(
+      process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET
+    );
+
+    if (paymentMethod !== "COD" && !hasRazorpayConfig) {
+      return NextResponse.json(
+        { message: "Online payments are temporarily unavailable. Please try Cash on Delivery or contact support." },
+        { status: 503 }
+      );
+    }
 
     await dbConnect();
 
@@ -66,10 +76,9 @@ export async function POST(req: Request) {
       }
 
       // Stock verification against Inventory collection
-      const initialStockTarget = 100; // Auto-seed 100 on first try
       let inv = await Inventory.findOne({ productId: item.productId });
-      if (!inv && catalogProduct.inStock) {
-         inv = await Inventory.create({ productId: item.productId, stock: initialStockTarget });
+      if (!inv) {
+        throw new Error(`Inventory not initialized for ${catalogProduct.name}.`);
       }
 
       if (!inv || inv.stock < item.quantity) {
@@ -110,7 +119,7 @@ export async function POST(req: Request) {
     });
 
     let razorpayOrderId = null;
-    if (paymentMethod !== "COD" && process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    if (paymentMethod !== "COD" && hasRazorpayConfig) {
       const Razorpay = require("razorpay");
       const razorpay = new Razorpay({
         key_id: process.env.RAZORPAY_KEY_ID,

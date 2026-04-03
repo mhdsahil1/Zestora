@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import { z } from "zod";
@@ -29,7 +29,7 @@ const adminUserUpdateSchema = z
   })
   .strict();
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -40,7 +40,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ message: "Forbidden." }, { status: 403 });
     }
 
-    const validatedParams = paramsSchema.safeParse(params);
+    const resolvedParams = await params;
+    const validatedParams = paramsSchema.safeParse(resolvedParams);
     if (!validatedParams.success) {
       return NextResponse.json({ message: "Invalid user id." }, { status: 400 });
     }
@@ -77,4 +78,3 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     );
   }
 }
-

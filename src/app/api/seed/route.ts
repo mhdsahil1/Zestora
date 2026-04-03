@@ -6,6 +6,13 @@ import { products as staticProducts } from '@/data/products';
 
 export async function GET() {
   try {
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { success: false, error: "Seeding is disabled in production." },
+        { status: 403 }
+      );
+    }
+
     await dbConnect();
 
     // 1. Clear existing products (if any incomplete seed happened)

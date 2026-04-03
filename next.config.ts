@@ -60,10 +60,6 @@ const nextConfig: NextConfig = {
   // Allow Next.js requests from WSL or external local environments
   allowedDevOrigins: ["192.168.137.1", "localhost"],
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
-  // TODO: Remove these once all TypeScript errors are fixed
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -77,4 +73,3 @@ const nextConfig: NextConfig = {
 } as NextConfig;
 
 export default nextConfig;
-

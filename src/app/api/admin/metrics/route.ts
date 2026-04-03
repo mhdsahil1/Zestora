@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
 import User from "@/models/User";
@@ -9,13 +9,8 @@ import Inventory from "@/models/Inventory";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    // Flexible RBAC check (assumes role might be missing during dev)
-    if (!session || !session.user || ((session.user as any).role !== "admin" && (session.user as any).email !== "admin@zestora.com")) {
-       // Permissive mode for demo/testing since user role might not be fully seeded
-       // In strict prod, return 403.
-       if (!session || !session.user) {
-         return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-       }
+    if (!session?.user || (session.user as any).role !== "admin") {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     await dbConnect();

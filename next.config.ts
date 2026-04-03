@@ -37,8 +37,8 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'res.cloudinary.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: '*.vusercontent.net' },
-      { protocol: 'https', hostname: '**.vusercontent.net' },
     ],
+    dangerouslyAllowSVG: true,
   },
   webpackDevMiddleware: {
     watchOptions: {

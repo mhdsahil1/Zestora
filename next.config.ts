@@ -22,9 +22,10 @@ const nextConfig: NextConfig = {
     ];
   },
   experimental: {
-    // This resolves the "Cross origin request detected" warning
+    // This allows the specific VM and any localhost ports
     allowedDevOrigins: [
       "vm-r9myd63b19wnqrvfh91r17.vusercontent.net",
+      "*.vusercontent.net",
       "localhost:3000"
     ],
   },

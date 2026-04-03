@@ -30,26 +30,20 @@ function ShopContent() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        console.log("[v0] Starting product fetch...");
         const res = await fetch('/api/products?t=' + Date.now());
-        console.log("[v0] API Response status:", res.status);
         
         if (!res.ok) {
           throw new Error(`API error: ${res.status}`);
         }
         
         const data = await res.json();
-        console.log("[v0] API data received:", data);
         
         if (data.success && Array.isArray(data.data)) {
-          console.log("[v0] Setting products, count:", data.data.length);
           setProducts(data.data);
         } else {
-          console.warn("[v0] Unexpected API response format:", data);
           throw new Error("Invalid API response format");
         }
       } catch (err: any) {
-        console.error("[v0] Failed to fetch products:", err);
         setError(err.message || "Failed to load products");
       } finally {
         setLoading(false);

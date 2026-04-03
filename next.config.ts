@@ -57,12 +57,21 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'https://*.vusercontent.net',
+        hostname: '*.vusercontent.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'vusercontent.net',
       },
     ],
   },
   // Allow Next.js requests from WSL or external local environments
-  allowedDevOrigins: ["192.168.137.1", "localhost"],
+  webpackDevMiddleware: {
+    watchOptions: {
+      poll: 1000,
+      aggregateTimeout: 300,
+    },
+  },
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
   // TODO: Remove these once all TypeScript errors are fixed
   typescript: {

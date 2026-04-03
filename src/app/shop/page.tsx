@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { SlidersHorizontal, Grid3X3, Grid2X2, X, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, Grid3X3, Grid2X2, X, ChevronDown, AlertCircle, RefreshCcw } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
@@ -25,20 +25,38 @@ function ShopContent() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/products?t=' + Date.now())
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setProducts(data.data);
+    const fetchProducts = async () => {
+      try {
+        console.log("[v0] Starting product fetch...");
+        const res = await fetch('/api/products?t=' + Date.now());
+        console.log("[v0] API Response status:", res.status);
+        
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
         }
+        
+        const data = await res.json();
+        console.log("[v0] API data received:", data);
+        
+        if (data.success && Array.isArray(data.data)) {
+          console.log("[v0] Setting products, count:", data.data.length);
+          setProducts(data.data);
+        } else {
+          console.warn("[v0] Unexpected API response format:", data);
+          throw new Error("Invalid API response format");
+        }
+      } catch (err: any) {
+        console.error("[v0] Failed to fetch products:", err);
+        setError(err.message || "Failed to load products");
+      } finally {
         setLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch products:", err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const allCategories = useMemo(() => ["All", ...Array.from(new Set(products.map((p) => p.category)))], [products]);
@@ -258,7 +276,21 @@ function ShopContent() {
         )}
 
         {/* Product Grid */}
-        {loading ? (
+        {error ? (
+          <div className="flex flex-col items-center justify-center p-12 text-center bg-white rounded-2xl border border-[#E8D5B0] my-12 mx-4 sm:mx-auto max-w-2xl shadow-sm">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
+              <AlertCircle className="w-8 h-8 text-red-500" />
+            </div>
+            <h2 className="font-serif text-2xl text-[#2B1B12] mb-3">Unable to Load Spices</h2>
+            <p className="text-[#7A5C3A] mb-8">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-2 px-6 py-2.5 bg-[#C65A00] text-white rounded-full font-medium hover:bg-[#2B1B12] transition-colors"
+            >
+              <RefreshCcw className="w-4 h-4" /> Try Again
+            </button>
+          </div>
+        ) : loading ? (
           <div className="text-center py-24">
             <p className="font-serif text-2xl text-[#2B1B12] mb-2">Loading Spices...</p>
           </div>

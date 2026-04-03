@@ -23,9 +23,10 @@ async function getProductAndRelated(slug: string) {
   };
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   await dbConnect();
-  const product = await ProductModel.findOne({ slug: params.slug }).lean();
+  const product = await ProductModel.findOne({ slug }).lean();
   if (!product) {
     return { title: "Product Not Found | Zestora" };
   }
@@ -40,8 +41,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const { product, related } = await getProductAndRelated(params.slug);
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const { product, related } = await getProductAndRelated(slug);
   
   if (!product) {
     return <div className="min-h-screen bg-[#FFF7E6] pt-32 text-center text-xl">Product not found.</div>;

@@ -27,11 +27,23 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+// Determine the base URL for NextAuth callbacks
+const getBaseUrl = () => {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3000";
+};
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
       httpOptions: {
         timeout: 10000,
       },
@@ -96,6 +108,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   useSecureCookies: process.env.NODE_ENV === "production",
+  trustHost: true,
   callbacks: {
     async signIn({ account, profile }) {
       // Google sign-in: create user if not exists, otherwise allow login.

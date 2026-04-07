@@ -44,7 +44,7 @@ export function OrderSummary({
               <span className="font-medium text-[#450A0A]">{item.name}</span>
               <span className="text-muted-foreground text-xs">Qty: {item.quantity}</span>
             </div>
-            <span className="font-semibold text-[#450A0A]">${(item.price * item.quantity).toFixed(2)}</span>
+            <span className="font-semibold text-[#450A0A]">₹{((item.price * item.quantity) * 100).toFixed(0)}</span>
           </div>
         ))}
 
@@ -52,12 +52,12 @@ export function OrderSummary({
 
         <div className="flex justify-between items-center text-sm">
           <span className="text-muted-foreground">Subtotal</span>
-          <span className="font-medium text-[#450A0A]">${subtotal.toFixed(2)}</span>
+          <span className="font-medium text-[#450A0A]">₹{(subtotal * 100).toFixed(0)}</span>
         </div>
         <div className="flex justify-between items-center text-sm">
           <span className="text-muted-foreground">Shipping</span>
           <span className="font-medium text-[#450A0A]">
-            {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+            {shipping === 0 ? "Free" : `₹${(shipping * 100).toFixed(0)}`}
           </span>
         </div>
       </CardContent>
@@ -66,7 +66,7 @@ export function OrderSummary({
 
       <CardFooter className="pt-4 flex justify-between items-center">
         <span className="font-bold text-lg text-[#450A0A]">Total</span>
-        <span className="font-bold text-xl text-[#DC2626]">${total.toFixed(2)}</span>
+        <span className="font-bold text-xl text-[#DC2626]">₹{(total * 100).toFixed(0)}</span>
       </CardFooter>
     </Card>
   )

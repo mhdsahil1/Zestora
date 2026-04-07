@@ -100,9 +100,9 @@ export async function POST(req: Request) {
     }
 
     // Server-side validation for COD rule
-    if (paymentMethod === "COD" && serverTotalPrice < 5000) {
+    if (paymentMethod === "COD" && serverTotalPrice < 50000) {
       return NextResponse.json(
-        { message: "Cash on delivery is only available for orders above ₹5000." },
+        { message: "Cash on delivery is only available for orders above ₹50,000." },
         { status: 400 }
       );
     }

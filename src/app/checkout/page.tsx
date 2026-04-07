@@ -66,8 +66,8 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (paymentMethod === "COD" && totalPrice < 5000) {
-      toast.error("Cash on Delivery is only available for orders above ₹5000");
+    if (paymentMethod === "COD" && totalPrice * 100 < 50000) {
+      toast.error("Cash on Delivery is only available for orders above ₹50,000");
       return;
     }
 
@@ -294,8 +294,8 @@ export default function CheckoutPage() {
 
                       {/* COD */}
                       <div className="relative">
-                        <label className={`flex items-center p-4 border rounded-xl transition-all ${totalPrice < 5000 ? 'opacity-50 border-[#E8D5B0] cursor-not-allowed bg-gray-50' : paymentMethod === 'COD' ? 'border-[#C65A00] bg-[#FFF7E6] ring-1 ring-[#C65A00] cursor-pointer' : 'border-[#E8D5B0] hover:border-[#C65A00] cursor-pointer'}`}>
-                          <input type="radio" name="payment" value="COD" checked={paymentMethod === 'COD'} onChange={(e) => setPaymentMethod(e.target.value)} disabled={totalPrice < 5000} className="w-5 h-5 text-[#C65A00] focus:ring-[#C65A00] disabled:opacity-50" />
+                        <label className={`flex items-center p-4 border rounded-xl transition-all ${totalPrice * 100 < 50000 ? 'opacity-50 border-[#E8D5B0] cursor-not-allowed bg-gray-50' : paymentMethod === 'COD' ? 'border-[#C65A00] bg-[#FFF7E6] ring-1 ring-[#C65A00] cursor-pointer' : 'border-[#E8D5B0] hover:border-[#C65A00] cursor-pointer'}`}>
+                          <input type="radio" name="payment" value="COD" checked={paymentMethod === 'COD'} onChange={(e) => setPaymentMethod(e.target.value)} disabled={totalPrice * 100 < 50000} className="w-5 h-5 text-[#C65A00] focus:ring-[#C65A00] disabled:opacity-50" />
                           <span className="ml-4 flex items-center justify-between flex-1">
                             <span className="flex items-center gap-3">
                               <Banknote size={24} className="text-[#C65A00]" />
@@ -303,9 +303,9 @@ export default function CheckoutPage() {
                             </span>
                           </span>
                         </label>
-                        {totalPrice < 5000 && (
+                        {totalPrice * 100 < 50000 && (
                           <div className="mt-2 text-sm text-red-500 flex items-center gap-1.5 ml-2">
-                            <AlertCircle size={14} /> Cash on Delivery is available only for orders above ₹5000.
+                            <AlertCircle size={14} /> Cash on Delivery is available only for orders above ₹50,000.
                           </div>
                         )}
                       </div>
@@ -344,7 +344,7 @@ export default function CheckoutPage() {
                     <div className="flex-1">
                       <h4 className="font-medium text-[#2B1B12] text-sm line-clamp-2">{item.product.name}</h4>
                       <div className="text-[#7A5C3A] text-xs mt-1">Qty: {item.quantity}</div>
-                      <div className="font-bold text-[#C65A00] mt-1">${item.product.price.toFixed(2)}</div>
+                      <div className="font-bold text-[#C65A00] mt-1">₹{(item.product.price * 100).toFixed(0)}</div>
                     </div>
                   </div>
                 ))}
@@ -353,7 +353,7 @@ export default function CheckoutPage() {
               <div className="space-y-3 py-4 border-t border-b border-[#E8D5B0] text-sm">
                 <div className="flex justify-between text-[#7A5C3A]">
                   <span>Subtotal</span>
-                  <span className="font-medium text-[#2B1B12]">${totalPrice.toFixed(2)}</span>
+                  <span className="font-medium text-[#2B1B12]">₹{(totalPrice * 100).toFixed(0)}</span>
                 </div>
                 <div className="flex justify-between text-[#7A5C3A]">
                   <span>Shipping</span>
@@ -363,7 +363,7 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between items-center mt-4">
                 <span className="font-bold text-[#2B1B12]">Total</span>
-                <span className="text-xl font-bold text-[#C65A00]">${totalPrice.toFixed(2)}</span>
+                <span className="text-xl font-bold text-[#C65A00]">₹{(totalPrice * 100).toFixed(0)}</span>
               </div>
             </div>
           </div>

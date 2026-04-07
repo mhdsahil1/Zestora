@@ -46,18 +46,10 @@ function LoginContent() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      const result = await signIn("google", { 
-        redirect: false,
-        callbackUrl 
+      await signIn("google", { 
+        callbackUrl,
+        redirect: true
       });
-      
-      if (result?.error) {
-        toast.error("Google sign-in failed. Please try again.");
-        setIsLoading(false);
-      } else if (result?.ok) {
-        toast.success("Welcome!");
-        router.push(callbackUrl);
-      }
     } catch (error) {
       toast.error("Something went wrong with Google sign-in.");
       setIsLoading(false);

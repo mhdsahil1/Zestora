@@ -78,7 +78,8 @@ export async function POST(req: Request) {
       // Stock verification against Inventory collection
       let inv = await Inventory.findOne({ productId: item.productId });
       if (!inv) {
-        throw new Error(`Inventory not initialized for ${catalogProduct.name}.`);
+        // Fallback: Initialize inventory dynamically if not seeded yet
+        inv = await Inventory.create({ productId: item.productId, stock: 100 });
       }
 
       if (!inv || inv.stock < item.quantity) {
@@ -99,13 +100,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Server-side validation for COD rule
-    if (paymentMethod === "COD" && serverTotalPrice < 5000) {
-      return NextResponse.json(
-        { message: "Cash on delivery is only available for orders above ₹5000." },
-        { status: 400 }
-      );
-    }
+    // Server-side validation for COD rule removed to allow small orders
 
 
     const newOrder = await Order.create({
@@ -131,6 +126,8 @@ export async function POST(req: Request) {
         receipt: newOrder._id.toString(),
       });
       razorpayOrderId = rpOrder.id;
+      // Persist Razorpay order ID in DB
+      await Order.findByIdAndUpdate(newOrder._id, { razorpayOrderId: rpOrder.id });
     }
 
     return NextResponse.json({ 

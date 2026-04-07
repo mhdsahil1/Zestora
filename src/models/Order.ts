@@ -48,6 +48,8 @@ const OrderSchema = new mongoose.Schema(
       default: 'Order Placed',
     },
     deliveryAddress: AddressSchema,
+    razorpayOrderId: { type: String, default: null },
+    razorpayPaymentId: { type: String, default: null },
   },
   { timestamps: true }
 );

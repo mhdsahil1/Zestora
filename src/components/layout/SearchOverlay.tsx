@@ -103,7 +103,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                     <p className="text-sm text-[#7A5C3A]">{product.origin}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-[#C65A00]">${product.price.toFixed(2)}</p>
+                    <p className="font-bold text-[#C65A00]">₹{product.price.toFixed(2)}</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-[#7A5C3A] opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>

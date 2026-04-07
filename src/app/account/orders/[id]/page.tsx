@@ -98,7 +98,7 @@ export default function OrderDetailsPage() {
                      <p className="text-sm text-[#7A5C3A] bg-[#FFF7E6] inline-block px-2 py-0.5 rounded-md">Qty: {item.quantity}</p>
                    </div>
                    <div className="font-bold text-[#C65A00] whitespace-nowrap text-lg">
-                     ${(item.price * item.quantity).toFixed(2)}
+                     ₹{(item.price * item.quantity).toFixed(2)}
                    </div>
                  </div>
                ))}
@@ -109,11 +109,11 @@ export default function OrderDetailsPage() {
              <div className="bg-white rounded-2xl shadow-sm border border-[#E8D5B0] p-6 sm:p-8">
                <h2 className="text-xl font-bold text-[#2B1B12] mb-5 font-serif">Order Summary</h2>
                <div className="space-y-3 text-sm border-b border-[#E8D5B0] pb-5 mb-5">
-                 <div className="flex justify-between text-[#7A5C3A]"><span>Subtotal</span><span className="font-medium text-[#2B1B12]">${order.totalPrice.toFixed(2)}</span></div>
+                 <div className="flex justify-between text-[#7A5C3A]"><span>Subtotal</span><span className="font-medium text-[#2B1B12]">₹{order.totalPrice.toFixed(2)}</span></div>
                  <div className="flex justify-between text-[#7A5C3A]"><span>Shipping</span><span className="font-medium text-green-600">Free</span></div>
                </div>
                <div className="flex justify-between items-center text-lg font-bold text-[#2B1B12]">
-                 <span>Total</span><span className="text-2xl text-[#C65A00]">${order.totalPrice.toFixed(2)}</span>
+                 <span>Total</span><span className="text-2xl text-[#C65A00]">₹{order.totalPrice.toFixed(2)}</span>
                </div>
              </div>
 

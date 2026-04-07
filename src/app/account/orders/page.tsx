@@ -39,7 +39,7 @@ export default function MyOrdersPage() {
                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
                    <div>
                      <div className="text-sm text-[#7A5C3A] mb-1">Order #{order._id.slice(-8).toUpperCase()}</div>
-                     <div className="font-semibold text-[#2B1B12] text-lg">${order.totalPrice.toFixed(2)} • {order.items?.length || order.products?.length} Items</div>
+                     <div className="font-semibold text-[#2B1B12] text-lg">₹{order.totalPrice.toFixed(2)} • {order.items?.length || order.products?.length} Items</div>
                      <div className="text-sm text-[#7A5C3A] mt-1">{format(new Date(order.createdAt), "MMM dd, yyyy")}</div>
                    </div>
                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between md:justify-end gap-4 sm:gap-6 w-full md:w-auto mt-2 md:mt-0 pt-4 md:pt-0 border-t md:border-0 border-[#E8D5B0]">

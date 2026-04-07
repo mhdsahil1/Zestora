@@ -37,6 +37,8 @@ export default function AdminProducts() {
   const [togglingSlug, setTogglingSlug] = useState<string | null>(null);
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [editingPriceSlug, setEditingPriceSlug] = useState<string | null>(null);
+  const [editingPriceValue, setEditingPriceValue] = useState<string>("");
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -84,6 +86,45 @@ export default function AdminProducts() {
       toast.error("Failed to update product");
     } finally {
       setTogglingSlug(null);
+    }
+  }
+
+  // ── Update Price ───────────────────────────────────────────────────────
+
+  async function handleUpdatePrice(slug: string, currentPrice: number) {
+    if (editingPriceSlug === slug) {
+      const newPrice = parseFloat(editingPriceValue);
+      if (isNaN(newPrice) || newPrice <= 0) {
+        toast.error("Invalid price");
+        return;
+      }
+      if (newPrice === currentPrice) {
+        setEditingPriceSlug(null);
+        return;
+      }
+
+      setTogglingSlug(slug);
+      try {
+        const res = await fetch(`/api/products/${slug}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ price: newPrice }),
+        });
+        if (!res.ok) throw new Error("Update failed");
+
+        setProducts((prev) =>
+          prev.map((p) => (p.slug === slug ? { ...p, price: newPrice } : p))
+        );
+        toast.success("Price updated");
+        setEditingPriceSlug(null);
+      } catch {
+        toast.error("Failed to update price");
+      } finally {
+        setTogglingSlug(null);
+      }
+    } else {
+      setEditingPriceSlug(slug);
+      setEditingPriceValue(currentPrice.toString());
     }
   }
 
@@ -240,13 +281,55 @@ export default function AdminProducts() {
 
                   {/* Price */}
                   <td className="p-4">
-                    <span className="font-bold text-[#2B1B12] text-sm">
-                      ₹{product.price}
-                    </span>
-                    {product.originalPrice && (
-                      <span className="text-xs text-[#7A5C3A] line-through ml-1.5">
-                        ₹{product.originalPrice}
-                      </span>
+                    {editingPriceSlug === product.slug ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#2B1B12] font-bold">₹</span>
+                        <input
+                          type="number"
+                          value={editingPriceValue}
+                          onChange={(e) => setEditingPriceValue(e.target.value)}
+                          className="w-20 px-2 py-1 text-sm border border-[#E8D5B0] rounded focus:outline-none focus:ring-1 focus:ring-[#C65A00]"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleUpdatePrice(product.slug, product.price);
+                            if (e.key === 'Escape') setEditingPriceSlug(null);
+                          }}
+                        />
+                        <button
+                          onClick={() => handleUpdatePrice(product.slug, product.price)}
+                          className="text-white bg-[#C65A00] hover:bg-[#a84d00] px-2 py-1 rounded text-xs font-bold transition-colors shadow-sm"
+                          disabled={togglingSlug === product.slug}
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingPriceSlug(null)}
+                          className="text-[#7A5C3A] hover:bg-gray-100 px-2 py-1 rounded text-xs font-bold transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div 
+                        className="group flex flex-col cursor-pointer"
+                        onClick={() => {
+                          setEditingPriceSlug(product.slug);
+                          setEditingPriceValue(product.price.toString());
+                        }}
+                        title="Click to edit price"
+                      >
+                        <span className="font-bold text-[#2B1B12] text-sm group-hover:text-[#C65A00] transition-colors inline-flex items-center gap-1.5">
+                          ₹{product.price}
+                          <svg className="w-3 h-3 text-[#7A5C3A] opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </span>
+                        {product.originalPrice && (
+                          <span className="text-xs text-[#7A5C3A] line-through mt-0.5">
+                            ₹{product.originalPrice}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </td>
 

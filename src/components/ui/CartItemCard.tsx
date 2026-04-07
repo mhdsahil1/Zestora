@@ -50,7 +50,7 @@ export function CartItemCard({
             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{item.description}</p>
           </div>
           <div className="font-semibold text-lg text-[#DC2626] mt-3">
-            ${item.price.toFixed(2)}
+            ₹{item.price.toFixed(2)}
           </div>
         </div>
         
@@ -61,7 +61,7 @@ export function CartItemCard({
           />
           <div className="flex items-center gap-4">
             <span className="font-bold text-md text-[#450A0A] hidden sm:inline-block">
-              Subtotal: ${(item.price * item.quantity).toFixed(2)}
+              Subtotal: ₹{(item.price * item.quantity).toFixed(2)}
             </span>
             <button 
               onClick={() => onRemove(item.id)}

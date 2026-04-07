@@ -75,7 +75,7 @@ export default function AdminOrders() {
                      {order.userId?.name || order.deliveryAddress?.fullName || "Guest"}
                      <div className="text-xs text-[#7A5C3A] font-normal">{order.userId?.email || ''}</div>
                    </td>
-                   <td className="p-4 font-bold text-[#2B1B12]">${order.totalPrice.toFixed(2)}</td>
+                   <td className="p-4 font-bold text-[#2B1B12]">₹{order.totalPrice.toFixed(2)}</td>
                    <td className="p-4">
                      <span className={`px-2.5 py-1 rounded-md text-xs font-bold tracking-wide ${order.paymentStatus === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {order.paymentStatus}

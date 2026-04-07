@@ -147,7 +147,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom */}
-      <div className="border-t border-white/10">
+      <div className="border-t border-white/10 pb-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/30 text-xs">
             © {new Date().getFullYear()} Zestora. All rights reserved.

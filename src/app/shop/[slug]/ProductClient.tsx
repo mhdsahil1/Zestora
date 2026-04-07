@@ -131,9 +131,9 @@ export default function ProductDetailPage({
 
             {/* Price */}
             <div className="flex items-baseline gap-3 mb-6">
-              <span className="font-serif text-4xl font-bold text-[#C65A00]">${product.price.toFixed(2)}</span>
+              <span className="font-serif text-4xl font-bold text-[#C65A00]">₹{product.price.toFixed(2)}</span>
               {product.originalPrice && (
-                <span className="text-xl text-[#B09070] line-through">${product.originalPrice.toFixed(2)}</span>
+                <span className="text-xl text-[#B09070] line-through">₹{product.originalPrice.toFixed(2)}</span>
               )}
               <span className="text-sm text-[#7A5C3A]">/ {product.weight}</span>
             </div>
@@ -155,14 +155,14 @@ export default function ProductDetailPage({
                 <div className="absolute top-0 right-0 bg-[#C65A00] text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-wider">Save {product.subscribeAndSaveDiscount}%</div>
                 <label className="flex items-center gap-3 cursor-pointer mb-3">
                   <input type="radio" checked={!isSubscribed} onChange={() => setIsSubscribed(false)} className="accent-[#C65A00] w-4 h-4" />
-                  <span className="text-sm font-medium text-[#2B1B12]">One-time purchase: ${product.price.toFixed(2)}</span>
+                  <span className="text-sm font-medium text-[#2B1B12]">One-time purchase: ₹{product.price.toFixed(2)}</span>
                 </label>
                 <div className="h-px bg-[#E8D5B0] w-full my-2"></div>
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input type="radio" checked={isSubscribed} onChange={() => setIsSubscribed(true)} className="accent-[#C65A00] w-4 h-4" />
                   <span className="text-sm font-medium text-[#2B1B12]">
                     Subscribe & Deliver Every 30 Days: <span className="text-[#C65A00]">
-                      ${(product.price * (1 - (product.subscribeAndSaveDiscount || 0) / 100)).toFixed(2)}
+                      ₹{(product.price * (1 - (product.subscribeAndSaveDiscount || 0) / 100)).toFixed(2)}
                     </span>
                   </span>
                 </label>

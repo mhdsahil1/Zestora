@@ -104,9 +104,9 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
 
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <span className="font-bold text-lg text-[#C65A00]">${product.price.toFixed(2)}</span>
+            <span className="font-bold text-lg text-[#C65A00]">₹{product.price.toFixed(2)}</span>
             {product.originalPrice && (
-              <span className="text-sm text-[#B09070] line-through">${product.originalPrice.toFixed(2)}</span>
+              <span className="text-sm text-[#B09070] line-through">₹{product.originalPrice.toFixed(2)}</span>
             )}
           </div>
           <div className="flex items-center gap-1 text-[10px] text-green-700 bg-green-50 px-2 py-1 rounded-full">

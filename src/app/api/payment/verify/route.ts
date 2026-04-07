@@ -84,6 +84,7 @@ export async function POST(req: Request) {
 
     order.paymentStatus = "COMPLETED";
     order.orderStatus = "Processing";
+    order.razorpayPaymentId = razorpay_payment_id;
     await order.save();
 
     return NextResponse.json(

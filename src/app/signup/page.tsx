@@ -74,7 +74,7 @@ function SignupContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4 pb-32">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-96 h-96 bg-[#D4A373] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>

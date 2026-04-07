@@ -44,13 +44,25 @@ function LoginContent() {
   };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
     try {
-      await signIn("google", { 
-        callbackUrl,
-        redirect: true
+      setIsLoading(true);
+      const result = await signIn("google", {
+        redirect: false,
+        callbackUrl: callbackUrl || "/account",
       });
+
+      if (result?.error) {
+        console.error("Google sign-in error:", result.error);
+        toast.error("Google sign-in failed. Please try again.");
+        setIsLoading(false);
+      } else if (result?.ok) {
+        toast.success("Welcome! Redirecting...");
+        setTimeout(() => {
+          window.location.href = result.url || callbackUrl || "/account";
+        }, 500);
+      }
     } catch (error) {
+      console.error("Google sign-in exception:", error);
       toast.error("Something went wrong with Google sign-in.");
       setIsLoading(false);
     }

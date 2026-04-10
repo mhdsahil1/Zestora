@@ -53,6 +53,8 @@
     "next": "^15.5.7",
     "next-auth": "^4.24.13",
     "next-themes": "^0.4.6",
+    "ngrok": "^5.0.0-beta.2",
+    "npm": "^11.12.1",
     "orchids-visual-edits": "^1.0.12",
     "rate-limiter-flexible": "^10.0.1",
     "razorpay": "^2.9.6",

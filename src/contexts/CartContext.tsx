@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from "react";
 import { Product } from "@/types/product";
+import { toast } from "sonner";
 
 export interface CartItem {
   product: Product;
@@ -116,10 +117,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider
       value={{
         state,
-        addItem: (product) => dispatch({ type: "ADD_ITEM", product }),
-        removeItem: (productId) => dispatch({ type: "REMOVE_ITEM", productId }),
-        updateQuantity: (productId, quantity) => dispatch({ type: "UPDATE_QUANTITY", productId, quantity }),
-        clearCart: () => dispatch({ type: "CLEAR_CART" }),
+        addItem: (product) => {
+          dispatch({ type: "ADD_ITEM", product });
+          toast.success(`Added "${product.name}" to cart!`);
+        },
+        removeItem: (productId) => {
+          const item = state.items.find((i) => i.product.id === productId);
+          dispatch({ type: "REMOVE_ITEM", productId });
+          if (item) {
+            toast.info(`Removed "${item.product.name}" from cart`);
+          }
+        },
+        updateQuantity: (productId, quantity) => {
+          if (quantity < 1) {
+            const item = state.items.find((i) => i.product.id === productId);
+            if (item) toast.info(`Removed "${item.product.name}" from cart`);
+          }
+          dispatch({ type: "UPDATE_QUANTITY", productId, quantity });
+        },
+        clearCart: () => {
+          dispatch({ type: "CLEAR_CART" });
+          toast.info("Cart has been cleared");
+        },
         toggleCart: () => dispatch({ type: "TOGGLE_CART" }),
         openCart: () => dispatch({ type: "OPEN_CART" }),
         closeCart: () => dispatch({ type: "CLOSE_CART" }),

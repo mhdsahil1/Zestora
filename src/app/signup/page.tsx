@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import Logo from "@/components/ui/Logo";
 
 function SignupContent() {
   const router = useRouter();
@@ -89,6 +90,11 @@ function SignupContent() {
       >
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/40">
           <div className="p-8 pb-4 text-center">
+            <div className="flex justify-center mb-4">
+              <Link href="/" className="inline-block hover:opacity-85 transition-opacity" title="Zestora Home">
+                <Logo className="text-3xl text-[#2B1B12]" />
+              </Link>
+            </div>
             <h1 className="text-3xl font-serif text-[#4A3B32] font-bold mb-2">Create Account</h1>
             <p className="text-[#8C7A6B]">Join Zestora and elevate your culinary experience</p>
           </div>
@@ -107,7 +113,7 @@ function SignupContent() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full pl-10 pr-4 py-3 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl focus:ring-2 focus:ring-[#D4A373] focus:border-transparent outline-none transition-all"
-                    placeholder="John Doe"
+                    placeholder="e.g. Aarav Sharma"
                   />
                 </div>
               </div>
@@ -124,7 +130,7 @@ function SignupContent() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full pl-10 pr-4 py-3 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl focus:ring-2 focus:ring-[#D4A373] focus:border-transparent outline-none transition-all"
-                    placeholder="+91 9876543210"
+                    placeholder="e.g. 9876543210"
                   />
                 </div>
               </div>
@@ -142,7 +148,7 @@ function SignupContent() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl focus:ring-2 focus:ring-[#D4A373] focus:border-transparent outline-none transition-all"
-                  placeholder="you@email.com"
+                  placeholder="name@example.com"
                 />
               </div>
             </div>

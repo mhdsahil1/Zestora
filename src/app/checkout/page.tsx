@@ -20,6 +20,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import Script from "next/script";
 import Image from "next/image";
 
@@ -327,7 +328,7 @@ export default function CheckoutPage() {
                           value={address.fullName}
                           onChange={(e) => setAddress({ ...address, fullName: e.target.value })}
                           className={inputClass}
-                          placeholder="John Doe"
+                          placeholder="e.g. Aarav Sharma"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -337,7 +338,7 @@ export default function CheckoutPage() {
                           value={address.phone}
                           onChange={(e) => setAddress({ ...address, phone: e.target.value })}
                           className={inputClass}
-                          placeholder="9876543210"
+                          placeholder="10-digit mobile number"
                         />
                       </div>
                     </div>
@@ -349,7 +350,7 @@ export default function CheckoutPage() {
                         value={address.addressLine}
                         onChange={(e) => setAddress({ ...address, addressLine: e.target.value })}
                         className={inputClass}
-                        placeholder="House/Flat No., Street Name, Landmark"
+                        placeholder="Flat, House no., Building, Company, Street"
                       />
                     </div>
 
@@ -554,6 +555,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </main>
   );
 }

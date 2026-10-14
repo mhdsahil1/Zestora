@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Mail, ArrowLeft, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import Logo from "@/components/ui/Logo";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -12,9 +13,12 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
     setIsSubmitted(true);
-    toast.success("Reset link sent!");
+    toast.success("Password reset link sent to your email!");
   };
 
   return (
@@ -32,6 +36,11 @@ export default function ForgotPasswordPage() {
       >
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/40">
           <div className="p-8 pb-6 text-center">
+            <div className="flex justify-center mb-4">
+              <Link href="/" className="inline-block hover:opacity-85 transition-opacity" title="Zestora Home">
+                <Logo className="text-3xl text-[#2B1B12]" />
+              </Link>
+            </div>
             <div className="w-16 h-16 bg-[#FAF8F5] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#E8E1D9]">
               <Mail className="text-[#D4A373]" size={28} />
             </div>
@@ -57,7 +66,7 @@ export default function ForgotPasswordPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl focus:ring-2 focus:ring-[#D4A373] focus:border-transparent outline-none transition-all"
-                    placeholder="you@email.com"
+                    placeholder="name@example.com"
                   />
                 </div>
               </div>

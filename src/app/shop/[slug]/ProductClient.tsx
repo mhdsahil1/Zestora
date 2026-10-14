@@ -14,6 +14,7 @@ import FlavorVisualizer from "@/components/ui/FlavorVisualizer";
 import { Product } from "@/types/product";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { toast } from "sonner";
 
 const mockReviews = [
   { id: 1, name: "Aisha Rahman", rating: 5, date: "Jan 2026", text: "Absolutely exceptional quality. The aroma alone tells you this is something special. Will be ordering regularly.", avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&q=80", aroma: 5, freshness: 5, spiciness: 4 },
@@ -323,8 +324,13 @@ export default function ProductDetailPage({
                           </div>
                         ))}
                       </div>
-                      <button className="w-full py-3 bg-[#C65A00] hover:bg-[#D4AF37] text-white rounded-full text-sm font-semibold transition-colors">
-                        Add Recipe to Cart
+                      <button 
+                        onClick={() => {
+                          addItem(product);
+                        }}
+                        className="w-full py-3 bg-[#C65A00] hover:bg-[#D4AF37] hover:text-[#2B1B12] text-white rounded-full text-sm font-semibold transition-colors cursor-pointer"
+                      >
+                        Add Recipe Bundle to Cart
                       </button>
                     </div>
                   )}
@@ -429,6 +435,49 @@ export default function ProductDetailPage({
                     <p className="text-sm text-[#7A5C3A] leading-relaxed italic">&ldquo;{review.text}&rdquo;</p>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {activeTab === "community" && (
+              <div className="max-w-4xl space-y-8 animate-fade-in">
+                <div className="bg-white p-8 rounded-3xl border border-[#E8D5B0] shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                      <h3 className="font-serif text-2xl font-bold text-[#2B1B12]">
+                        Community Spice Pairings &amp; Tips
+                      </h3>
+                      <p className="text-sm text-[#7A5C3A] mt-1">
+                        How home cooks and culinary artists cook with {product.name}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => toast.success("Thank you! Community submission form opened.")}
+                      className="px-6 py-2.5 bg-[#C65A00] text-white rounded-full text-xs font-semibold hover:bg-[#2B1B12] transition-colors whitespace-nowrap self-start sm:self-auto cursor-pointer"
+                    >
+                      Share Your Pairing
+                    </button>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="p-5 bg-[#FFF7E6] rounded-2xl border border-[#E8D5B0]">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#C65A00] bg-white px-2.5 py-1 rounded-full border border-[#E8D5B0]">Chef Recommendation</span>
+                      <h4 className="font-serif font-bold text-base text-[#2B1B12] mt-3 mb-1">Slow Roasting &amp; Infusions</h4>
+                      <p className="text-xs text-[#7A5C3A] leading-relaxed">
+                        &ldquo;Gently crush before adding to warm fats or broths at the very beginning to draw out fat-soluble aromatics.&rdquo;
+                      </p>
+                      <p className="text-[11px] font-semibold text-[#2B1B12] mt-3">— Chef Kabir S., Mumbai</p>
+                    </div>
+
+                    <div className="p-5 bg-[#FFF7E6] rounded-2xl border border-[#E8D5B0]">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-white px-2.5 py-1 rounded-full border border-[#E8D5B0]">Home Cook Favorite</span>
+                      <h4 className="font-serif font-bold text-base text-[#2B1B12] mt-3 mb-1">Morning Golden Brews</h4>
+                      <p className="text-xs text-[#7A5C3A] leading-relaxed">
+                        &ldquo;Pairs divinely with warm oat milk, crushed green cardamom pods, and a drizzle of raw forest honey.&rdquo;
+                      </p>
+                      <p className="text-[11px] font-semibold text-[#2B1B12] mt-3">— Radhika M., Bengaluru</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Product } from "@/types/product";
+import { toast } from "sonner";
 
 const WISHLIST_STORAGE_KEY = "zestora_wishlist";
 
@@ -41,10 +42,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       if (prev.find((p) => p.id === product.id)) return prev;
       return [...prev, product];
     });
+    toast.success(`Saved "${product.name}" to wishlist!`);
   };
 
   const removeItem = (productId: string) => {
+    const item = items.find((p) => p.id === productId);
     setItems((prev) => prev.filter((p) => p.id !== productId));
+    if (item) {
+      toast.info(`Removed "${item.name}" from wishlist`);
+    }
   };
 
   const isWishlisted = (productId: string) => items.some((p) => p.id === productId);

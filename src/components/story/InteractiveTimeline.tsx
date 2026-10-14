@@ -86,7 +86,7 @@ export default function InteractiveTimeline() {
   const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <section ref={containerRef} className="relative py-40 bg-[#0A0A0A] overflow-hidden">
+    <section id="sustainability" ref={containerRef} className="relative py-40 bg-[#0A0A0A] overflow-hidden">
       <div className="absolute inset-0 futuristic-grain mix-blend-overlay opacity-10 pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative pt-12">

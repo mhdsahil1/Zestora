@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroKinetic from "@/components/story/HeroKinetic";
 import FarmParallax from "@/components/story/FarmParallax";
 import InteractiveTimeline from "@/components/story/InteractiveTimeline";
+
+export const metadata: Metadata = {
+  title: "Our Story & Farm Sourcing | Zestora",
+  description: "Discover Zestora's heritage journey since 2009. We partner directly with organic spice farmers in Kerala, Kashmir, and Tamil Nadu to deliver pure, unadulterated flavor.",
+};
 
 export default function AboutPage() {
   return (

@@ -1,0 +1,27 @@
+import type { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'Zestora - Premium Organic Spices',
+    short_name: 'Zestora',
+    description: 'Discover authentic, fresh, and organic spices sourced directly from farms. Pure Spices. Real Flavor.',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#FFF7E6',
+    theme_color: '#C65A00',
+    icons: [
+      {
+        src: '/icon.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+      {
+        src: '/icon.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
+    ],
+  };
+}

@@ -23,7 +23,7 @@ export default function FarmParallax() {
   const card2Opacity = useTransform(scrollYProgress, [0.4, 0.6, 0.8, 0.95], [0, 1, 1, 0]);
 
   return (
-    <section ref={containerRef} className="relative h-[300vh] bg-[#0A0A0A]">
+    <section id="sourcing" ref={containerRef} className="relative h-[300vh] bg-[#0A0A0A]">
       <div className="sticky top-0 h-screen overflow-hidden bg-black">
         
         {/* Background Image A: Kochi Spice Gardens */}
@@ -31,7 +31,6 @@ export default function FarmParallax() {
           style={{ opacity: imgAOpacity, willChange: "opacity" }}
           className="absolute inset-0"
         >
-          {/* Using Unsplash placeholder logic, replace with high-res later */}
           <img 
             src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1920&q=80" 
             alt="Kochi Spice Gardens"

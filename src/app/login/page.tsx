@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, LogIn, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import Logo from "@/components/ui/Logo";
 
 function LoginContent() {
   const router = useRouter();
@@ -63,6 +64,11 @@ function LoginContent() {
       >
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/40">
           <div className="p-8 pb-6 text-center">
+            <div className="flex justify-center mb-4">
+              <Link href="/" className="inline-flex items-center group" aria-label="Zestora Home">
+                <Logo className="text-3xl text-[#2B1B12] hover:opacity-85 transition-opacity" />
+              </Link>
+            </div>
             <h1 className="text-3xl font-serif text-[#4A3B32] font-bold mb-2">Welcome Back</h1>
             <p className="text-[#8C7A6B]">Sign in to your Zestora account</p>
           </div>
@@ -80,7 +86,7 @@ function LoginContent() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 bg-[#FAF8F5] border border-[#E8E1D9] rounded-xl focus:ring-2 focus:ring-[#D4A373] focus:border-transparent outline-none transition-all"
-                  placeholder="you@email.com"
+                  placeholder="name@example.com"
                 />
               </div>
             </div>

@@ -55,10 +55,24 @@ function ShopContent() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
 
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat) {
+      setSelectedCategory(cat);
+    }
+  }, [searchParams]);
+
   const filtered = useMemo(() => {
     let list = [...products];
     if (selectedCategory !== "All") {
-      list = list.filter((p) => p.category === selectedCategory);
+      const q = selectedCategory.toLowerCase();
+      list = list.filter((p) => {
+        const catMatch = p.category && p.category.toLowerCase().includes(q);
+        const subMatch = p.subCategory && p.subCategory.toLowerCase().includes(q);
+        const tagMatch = p.tags && p.tags.some(t => t.toLowerCase().includes(q));
+        const nameMatch = p.name && p.name.toLowerCase().includes(q);
+        return catMatch || subMatch || tagMatch || nameMatch;
+      });
     }
     if (selectedCuisine !== "All") {
       list = list.filter((p) => p.cuisine?.includes(selectedCuisine));
@@ -77,7 +91,7 @@ function ShopContent() {
       case "featured": list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)); break;
     }
     return list;
-  }, [selectedCategory, selectedCuisine, selectedDietary, sortBy, priceRange, inStockOnly]);
+  }, [selectedCategory, selectedCuisine, selectedDietary, sortBy, priceRange, inStockOnly, products]);
 
   return (
     <main className="min-h-screen bg-[#FFF7E6]">
@@ -269,7 +283,7 @@ function ShopContent() {
           </div>
         ) : (
           <>
-            <div className={`grid gap-5 lg:gap-6 grid-cols-2 ${
+            <div className={`grid gap-5 lg:gap-6 grid-cols-1 sm:grid-cols-2 ${
               gridCols === 4 ? "md:grid-cols-3 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"
             }`}>
               {filtered.slice(0, visibleCount).map((product) => (
